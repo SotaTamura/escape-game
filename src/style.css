@@ -68,7 +68,7 @@ body {
   justify-content: center;
 }
 .btn {
-  background-image: url("./buttonUI.png");
+  background-image: url("/buttonUI.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
