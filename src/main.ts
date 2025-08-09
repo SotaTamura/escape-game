@@ -39,7 +39,7 @@ export let rotations: GameObj[];
 export let stageNum: number;
 let prevTime: number | undefined;
 export let dt: number;
-export let updateId: number;
+export let loopId: number;
 // オブジェクト削除
 const remove = (obj: GameObj) => {
   const typeArrays: GameObj[][] = [players, blocks, ladders, keys, oneways];
@@ -55,7 +55,7 @@ const remove = (obj: GameObj) => {
 };
 // 停止
 export const stop = () => {
-  window.cancelAnimationFrame(updateId);
+  window.cancelAnimationFrame(loopId);
   prevTime = undefined;
 };
 // オブジェクトの状態切り替え
@@ -179,62 +179,72 @@ export const loadStage = async (i: number) => {
       }
   }
 };
-// 更新
-export const update = (timestamp: DOMHighResTimeStamp) => {
-  if (prevTime !== undefined) {
-    dt = timestamp - prevTime;
-    // プレイヤーの移動
-    for (const player of players) {
-      player.vy += 0.00004 * dt; // 重力加速度
-      player.handleLadder(ladders, dt); //ハシゴ
-      const otherSolidObjs = gameObjs.filter(
-        (obj) => obj !== player && obj.isSolid
-      );
-      player.handleHorizontalMove(); // 左右移動
-      player.isOnBlock = null;
-      player.isOnLadder = null;
-      player.collideBottom(otherSolidObjs); // 着地
-      player.collideBottomWithLadder(ladders); // ハシゴの上に着地
-      if (pressStartEvent.up && (player.isOnBlock || player.isOnLadder))
-        player.vy = -0.0125; // ジャンプ
-      player.collideTop(otherSolidObjs); // 天井衝突
-      player.collideLeft(otherSolidObjs); // 左壁衝突
-      player.collideRight(otherSolidObjs); // 右壁衝突
-      if (player.isInLadder) {
-        if (pressingEvent.up || pressingEvent.down)
-          changeTexture(player, "ladderMove");
-        else changeTexture(player, "ladderIdle");
-      } else if (!(player.isOnBlock || player.isOnLadder))
-        changeTexture(player, "jump");
-      else {
-        if (player.vx === 0) changeTexture(player, "idle");
-        else changeTexture(player, "walk");
-      }
-      player.x += player.vx * dt;
-      player.y += player.vy * dt; // 移動
-      // ゴール
-      if (
-        player.right < 0 ||
-        player.left > MAP_BLOCK_LEN ||
-        player.bottom < 0 ||
-        player.top > MAP_BLOCK_LEN
-      ) {
-        remove(player);
-        if (players.length === 0) loadStage(stageNum + 1);
-      }
+export const update = () => {
+  // プレイヤーの移動
+  for (const player of players) {
+    player.vy += 0.01; // 重力加速度
+    player.handleLadder(ladders); //ハシゴ
+    const otherSolidObjs = gameObjs.filter(
+      (obj) => obj !== player && obj.isSolid
+    );
+    player.handleHorizontalMove(); // 左右移動
+    player.isOnBlock = null;
+    player.isOnLadder = null;
+    player.collideBottom(otherSolidObjs); // 着地
+    player.collideBottomWithLadder(ladders); // ハシゴの上に着地
+    if (pressStartEvent.up && (player.isOnBlock || player.isOnLadder))
+      player.vy = -0.2; // ジャンプ
+    player.collideTop(otherSolidObjs); // 天井衝突
+    player.collideLeft(otherSolidObjs); // 左壁衝突
+    player.collideRight(otherSolidObjs); // 右壁衝突
+    if (player.isInLadder) {
+      if (pressingEvent.up || pressingEvent.down)
+        changeTexture(player, "ladderMove");
+      else changeTexture(player, "ladderIdle");
+    } else if (!(player.isOnBlock || player.isOnLadder))
+      changeTexture(player, "jump");
+    else {
+      if (player.vx === 0) changeTexture(player, "idle");
+      else changeTexture(player, "walk");
     }
-    // 鍵
-    for (const key of keys)
-      for (const player of players) {
-        if (player.colliding(key)) {
-          remove(key);
-          activate(key.color);
-        }
-        break;
+    player.x += player.vx;
+    player.y += player.vy; // 移動
+    // ゴール
+    if (
+      player.right < 0 ||
+      player.left > MAP_BLOCK_LEN ||
+      player.bottom < 0 ||
+      player.top > MAP_BLOCK_LEN
+    ) {
+      remove(player);
+      if (players.length === 0) loadStage(stageNum + 1);
+    }
+  }
+  // 鍵
+  for (const key of keys)
+    for (const player of players) {
+      if (player.colliding(key)) {
+        remove(key);
+        activate(key.color);
       }
-    clearPressStart();
-    moveSprites();
+      break;
+    }
+  clearPressStart();
+  moveSprites();
+};
+export const STEP = 1000 / 60;
+let accumulator = 0;
+// 更新
+export const gameLoop = (timestamp: DOMHighResTimeStamp) => {
+  if (prevTime !== undefined) {
+    dt = Math.min(timestamp - prevTime, 100);
+  }
+  console.log(dt);
+  accumulator += dt ? dt : 0;
+  while (accumulator >= STEP) {
+    update();
+    accumulator -= STEP;
   }
   prevTime = timestamp;
-  updateId = requestAnimationFrame(update);
+  loopId = requestAnimationFrame(gameLoop);
 };

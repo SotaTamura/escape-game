@@ -5,7 +5,7 @@ import {
   isColorable,
   isNonAnimated,
 } from "./class.ts";
-import { loadStage, stageNum, update, updateId, gameObjs } from "./main.ts";
+import { loadStage, stageNum, gameLoop, loopId, gameObjs } from "./main.ts";
 import {
   Application,
   Assets,
@@ -301,7 +301,7 @@ export const moveSprites = () => {
     $stage.addEventListener("click", async () => {
       await loadStage(i);
       playScreen();
-      requestAnimationFrame(update);
+      requestAnimationFrame(gameLoop);
     });
     $stageWrapper.appendChild($stage);
   }
@@ -309,7 +309,7 @@ export const moveSprites = () => {
   $restart.addEventListener("click", () => loadStage(stageNum));
   // メニューに戻る
   $backToMenu.addEventListener("click", () => {
-    cancelAnimationFrame(updateId);
+    cancelAnimationFrame(loopId);
     stageSelectScreen();
   });
   // キーイベント

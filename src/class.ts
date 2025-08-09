@@ -13,7 +13,6 @@ import {
   playerLadderMoveFrames,
   playerLadderIdleFrames,
 } from "./base.ts";
-import { dt } from "./main.ts";
 
 // オブジェクト
 export abstract class GameObj {
@@ -122,12 +121,12 @@ export abstract class GameObj {
       if (
         this.vy >= 0 &&
         this.innerHitboxBottom <= obj.hitboxTop &&
-        this.hitboxBottom + this.vy * dt >= obj.hitboxTop &&
+        this.hitboxBottom + this.vy >= obj.hitboxTop &&
         !(
           (this.innerHitboxRight <= obj.hitboxLeft ||
             this.innerHitboxLeft >= obj.hitboxRight) &&
-          (this.innerHitboxRight + this.vx * dt <= obj.hitboxLeft ||
-            this.innerHitboxLeft + this.vx * dt >= obj.hitboxRight)
+          (this.innerHitboxRight + this.vx <= obj.hitboxLeft ||
+            this.innerHitboxLeft + this.vx >= obj.hitboxRight)
         )
       ) {
         this.y = obj.hitboxTop - this.hitboxYEnd;
@@ -143,12 +142,12 @@ export abstract class GameObj {
       if (
         this.vy >= 0 &&
         this.hitboxBottom <= ladder.hitboxTop &&
-        this.hitboxBottom + this.vy * dt >= ladder.hitboxTop &&
+        this.hitboxBottom + this.vy >= ladder.hitboxTop &&
         !(
           (this.innerHitboxRight <= ladder.hitboxLeft ||
             this.innerHitboxLeft >= ladder.hitboxRight) &&
-          (this.innerHitboxRight + this.vx * dt <= ladder.hitboxLeft ||
-            this.innerHitboxLeft + this.vx * dt >= ladder.hitboxRight)
+          (this.innerHitboxRight + this.vx <= ladder.hitboxLeft ||
+            this.innerHitboxLeft + this.vx >= ladder.hitboxRight)
         )
       ) {
         this.y = ladder.hitboxTop - this.hitboxYEnd;
@@ -165,12 +164,12 @@ export abstract class GameObj {
       if (
         this.vy <= 0 &&
         this.innerHitboxTop >= obj.hitboxBottom &&
-        this.hitboxTop + this.vy * dt <= obj.hitboxBottom + obj.vy * dt &&
+        this.hitboxTop + this.vy <= obj.hitboxBottom + obj.vy &&
         !(
           (this.innerHitboxRight <= obj.hitboxLeft ||
             this.innerHitboxLeft >= obj.hitboxRight) &&
-          (this.innerHitboxRight + this.vx * dt <= obj.hitboxLeft ||
-            this.innerHitboxLeft + this.vx * dt >= obj.hitboxRight)
+          (this.innerHitboxRight + this.vx <= obj.hitboxLeft ||
+            this.innerHitboxLeft + this.vx >= obj.hitboxRight)
         )
       ) {
         this.y = obj.hitboxBottom;
@@ -186,12 +185,12 @@ export abstract class GameObj {
       if (
         this.vx <= 0 &&
         this.innerHitboxLeft >= obj.hitboxRight &&
-        this.hitboxLeft + this.vx * dt <= obj.hitboxRight &&
+        this.hitboxLeft + this.vx <= obj.hitboxRight &&
         !(
           (this.innerHitboxBottom <= obj.hitboxTop ||
             this.innerHitboxTop >= obj.hitboxBottom) &&
-          (this.innerHitboxBottom + this.vy * dt <= obj.hitboxTop ||
-            this.innerHitboxTop + this.vy * dt >= obj.hitboxBottom)
+          (this.innerHitboxBottom + this.vy <= obj.hitboxTop ||
+            this.innerHitboxTop + this.vy >= obj.hitboxBottom)
         )
       ) {
         this.x = obj.hitboxRight;
@@ -207,12 +206,12 @@ export abstract class GameObj {
       if (
         this.vx >= 0 &&
         this.innerHitboxRight <= obj.hitboxLeft &&
-        this.hitboxRight + this.vx * dt >= obj.hitboxLeft &&
+        this.hitboxRight + this.vx >= obj.hitboxLeft &&
         !(
           (this.innerHitboxBottom <= obj.hitboxTop ||
             this.innerHitboxTop >= obj.hitboxBottom) &&
-          (this.innerHitboxBottom + this.vy * dt <= obj.hitboxTop ||
-            this.innerHitboxTop + this.vy * dt >= obj.hitboxBottom)
+          (this.innerHitboxBottom + this.vy <= obj.hitboxTop ||
+            this.innerHitboxTop + this.vy >= obj.hitboxBottom)
         )
       ) {
         this.x = obj.hitboxLeft - this.hitboxXEnd;
@@ -271,7 +270,7 @@ export class Player extends GameObj implements Animated {
     if (pressingEvent.down) return;
     super.collideBottomWithLadder(ladders);
   }
-  handleLadder(ladders: Ladder[], dt: number) {
+  handleLadder(ladders: Ladder[]) {
     // ハシゴ
     for (const ladder of ladders) {
       // 梯子判定
@@ -283,13 +282,13 @@ export class Player extends GameObj implements Animated {
     if (this.isInLadder) {
       if (pressingEvent.up && pressingEvent.down) this.vy = 0;
       else if (pressingEvent.up) {
-        if (this.hitboxBottom - 0.005 * dt <= this.isInLadder.hitboxTop) {
+        if (this.hitboxBottom - 0.08 <= this.isInLadder.hitboxTop) {
           this.y = this.isInLadder.hitboxTop - this.hitboxYEnd;
           this.vy = 0;
         } else {
-          this.vy = -0.005;
+          this.vy = -0.08;
         } //梯子を登る
-      } else if (pressingEvent.down) this.vy = 0.005; // 梯子を下る
+      } else if (pressingEvent.down) this.vy = 0.08; // 梯子を下る
       else this.vy = 0;
     }
   }
@@ -297,10 +296,10 @@ export class Player extends GameObj implements Animated {
     if (pressingEvent.left && pressingEvent.right) this.vx = 0;
     else if (pressingEvent.left) {
       if (this.animatedSprite.texture.rotate === 0) flipX(this);
-      this.vx = -0.005;
+      this.vx = -0.08;
     } else if (pressingEvent.right) {
       if (this.animatedSprite.texture.rotate === 12) flipX(this);
-      this.vx = 0.005;
+      this.vx = 0.08;
     } else this.vx = 0;
   }
 }
