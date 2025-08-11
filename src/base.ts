@@ -5,7 +5,7 @@ import {
   isColorable,
   isNonAnimated,
 } from "./class.ts";
-import { loadStage, stageNum, gameLoop, loopId, gameObjs } from "./main.ts";
+import { loadStage, stageNum, gameObjs, update } from "./main.ts";
 import {
   Application,
   Assets,
@@ -17,6 +17,7 @@ import {
 // 定数
 const π = Math.PI;
 const STAGE_LEN = 8;
+const STEP = 1000 / 60;
 // 要素取得
 const $popup = document.getElementById("popup") as HTMLElement;
 const $restart = document.getElementsByClassName("restart")[0] as HTMLElement;
@@ -224,7 +225,6 @@ export const blockDashLine = (obj: Block) => {
   borderContainer.tint = obj.color;
   app.stage.addChild(borderContainer);
 };
-
 // 描画更新
 export const moveSprites = () => {
   gameObjs.forEach((obj) => {
@@ -299,6 +299,7 @@ export const moveSprites = () => {
     $stage.innerHTML = `<div class="icon">${i}</div>`;
     // ステージ起動
     $stage.addEventListener("click", async () => {
+      prevTime = undefined;
       await loadStage(i);
       playScreen();
       requestAnimationFrame(gameLoop);
@@ -350,3 +351,25 @@ export const moveSprites = () => {
   arrowBtnEventListener("right");
   arrowBtnEventListener("down");
 })();
+// 更新
+export let prevTime: number | undefined;
+let accumulator = 0;
+let dt: number;
+export let loopId: number;
+export const gameLoop = (timestamp: DOMHighResTimeStamp) => {
+  if (prevTime !== undefined) {
+    dt = Math.min(timestamp - prevTime, 100);
+  }
+  accumulator += dt ? dt : 0;
+  while (accumulator >= STEP) {
+    update();
+    accumulator -= STEP;
+  }
+  prevTime = timestamp;
+  loopId = requestAnimationFrame(gameLoop);
+};
+// 停止
+export const stop = () => {
+  window.cancelAnimationFrame(loopId);
+  prevTime = undefined;
+};

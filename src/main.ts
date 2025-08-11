@@ -37,9 +37,7 @@ export let buttons: GameObj[];
 export let questions: GameObj[];
 export let rotations: GameObj[];
 export let stageNum: number;
-let prevTime: number | undefined;
-export let dt: number;
-export let loopId: number;
+
 // オブジェクト削除
 const remove = (obj: GameObj) => {
   const typeArrays: GameObj[][] = [players, blocks, ladders, keys, oneways];
@@ -52,11 +50,6 @@ const remove = (obj: GameObj) => {
       else if (isAnimated(obj)) obj.animatedSprite.destroy();
     }
   }
-};
-// 停止
-export const stop = () => {
-  window.cancelAnimationFrame(loopId);
-  prevTime = undefined;
 };
 // オブジェクトの状態切り替え
 const activate = (color: string) => {
@@ -87,7 +80,6 @@ export const loadStage = async (i: number) => {
   stageNum = i;
   $stageNum.textContent = i.toString();
   // 初期化
-  prevTime = undefined;
   gameObjs = [];
   players = [];
   blocks = [];
@@ -172,7 +164,7 @@ export const loadStage = async (i: number) => {
           );
           oneways.push(newObj);
         } else {
-          throw new Error("Unknown gid");
+          throw new Error(`Unknown gid ${obj.gid}`);
         }
         gameObjs.push(newObj);
         setSprite(newObj); // pixiに反映
@@ -231,20 +223,4 @@ export const update = () => {
     }
   clearPressStart();
   moveSprites();
-};
-export const STEP = 1000 / 60;
-let accumulator = 0;
-// 更新
-export const gameLoop = (timestamp: DOMHighResTimeStamp) => {
-  if (prevTime !== undefined) {
-    dt = Math.min(timestamp - prevTime, 100);
-  }
-  console.log(dt);
-  accumulator += dt ? dt : 0;
-  while (accumulator >= STEP) {
-    update();
-    accumulator -= STEP;
-  }
-  prevTime = timestamp;
-  loopId = requestAnimationFrame(gameLoop);
 };
