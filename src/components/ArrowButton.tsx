@@ -14,14 +14,14 @@ export default function ArrowButton({ eventName }: { eventName: string }) {
 
   return (
     <>
-      <div
-        className={`btn arrow ${eventName}`}
-        onTouchStart={HandleTouchStart}
-        onTouchEnd={HandleTouchEnd}
-      >
+      <div className={`btn arrow ${eventName}`}>
         <img src={`/${eventName}.png`} alt="" className="icon" />
       </div>
-      <div className={`invisibleBtnCover ${eventName}`}></div>
+      <div
+        className={`invisibleBtnCover ${eventName}`}
+        onTouchStart={HandleTouchStart}
+        onTouchEnd={HandleTouchEnd}
+      ></div>
     </>
   );
 }

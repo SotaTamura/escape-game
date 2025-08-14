@@ -14,12 +14,12 @@ img {
   touch-action: none;
 }
 img {
-  -webkit-touch-callout: none;
   pointer-events: none;
 }
 .btn,
 img {
   image-rendering: pixelated;
+  -webkit-touch-callout: none;
 }
 .stageWrapper,
 .stage {
@@ -114,6 +114,7 @@ body {
 }
 .invisibleBtnCover {
   background: transparent;
+  z-index: 1;
 }
 .btn .icon {
   position: absolute;
