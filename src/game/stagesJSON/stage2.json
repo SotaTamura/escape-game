@@ -5,31 +5,154 @@
   "layers": [
     {
       "draworder": "topdown",
+      "id": 3,
+      "name": "Red",
+      "objects": [
+        {
+          "gid": 5,
+          "height": 16,
+          "id": 31,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 48
+        },
+        {
+          "gid": 2,
+          "height": 64,
+          "id": 32,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 144,
+          "y": 80
+        }
+      ],
+      "opacity": 1,
+      "tintcolor": "#ff0000",
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "Green",
+      "objects": [
+        {
+          "gid": 5,
+          "height": 16,
+          "id": 33,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 176,
+          "y": 64
+        },
+        {
+          "gid": 2,
+          "height": 96,
+          "id": 34,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 192
+        }
+      ],
+      "opacity": 1,
+      "tintcolor": "#00ff00",
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 5,
+      "name": "Blue",
+      "objects": [
+        {
+          "gid": 5,
+          "height": 16,
+          "id": 35,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 16,
+          "y": 192
+        },
+        {
+          "gid": 2,
+          "height": 96,
+          "id": 36,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 144,
+          "y": 192
+        }
+      ],
+      "opacity": 1,
+      "tintcolor": "#0000ff",
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
       "id": 2,
       "name": "White",
       "objects": [
         {
           "gid": 2,
-          "height": 32,
-          "id": 22,
+          "height": 16,
+          "id": 2,
           "name": "",
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 48,
-          "x": 64,
-          "y": 240
+          "width": 256,
+          "x": 0,
+          "y": 256
         },
         {
           "gid": 2,
-          "height": 48,
-          "id": 23,
+          "height": 208,
+          "id": 11,
           "name": "",
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 96,
-          "x": 144,
+          "width": 16,
+          "x": 240,
+          "y": 224
+        },
+        {
+          "gid": 2,
+          "height": 224,
+          "id": 6,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 0,
           "y": 240
         },
         {
@@ -40,62 +163,74 @@
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 32,
-          "x": 192,
-          "y": 112
-        },
-        {
-          "gid": 2,
-          "height": 16,
-          "id": 25,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 32,
-          "x": 128,
-          "y": 96
-        },
-        {
-          "gid": 2,
-          "height": 16,
-          "id": 26,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 80,
-          "x": 16,
-          "y": 80
-        },
-        {
-          "gid": 2,
-          "height": 176,
-          "id": 27,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
           "width": 16,
-          "x": 0,
+          "x": 176,
           "y": 240
         },
         {
           "gid": 2,
           "height": 32,
-          "id": 28,
+          "id": 25,
           "name": "",
           "rotation": 0,
           "type": "",
           "visible": true,
           "width": 16,
-          "x": 0,
-          "y": 48
+          "x": 160,
+          "y": 240
+        },
+        {
+          "gid": 2,
+          "height": 48,
+          "id": 26,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 144,
+          "x": 16,
+          "y": 240
         },
         {
           "gid": 2,
           "height": 16,
-          "id": 29,
+          "id": 27,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 144,
+          "x": 96,
+          "y": 96
+        },
+        {
+          "gid": 2,
+          "height": 16,
+          "id": 28,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 48,
+          "x": 16,
+          "y": 96
+        },
+        {
+          "gid": 1,
+          "height": 16,
+          "id": 30,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 16,
+          "x": 16,
+          "y": 80
+        },
+        {
+          "gid": 2,
+          "height": 16,
+          "id": 1,
           "name": "",
           "rotation": 0,
           "type": "",
@@ -103,115 +238,6 @@
           "width": 256,
           "x": 0,
           "y": 16
-        },
-        {
-          "gid": 2,
-          "height": 224,
-          "id": 30,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 240,
-          "y": 240
-        },
-        {
-          "gid": 2,
-          "height": 16,
-          "id": 31,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 256,
-          "x": 0,
-          "y": 256
-        },
-        {
-          "gid": 4,
-          "height": 16,
-          "id": 32,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 224,
-          "y": 192
-        },
-        {
-          "gid": 4,
-          "height": 16,
-          "id": 33,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 224,
-          "y": 176
-        },
-        {
-          "gid": 4,
-          "height": 16,
-          "id": 34,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 224,
-          "y": 160
-        },
-        {
-          "gid": 4,
-          "height": 16,
-          "id": 35,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 224,
-          "y": 144
-        },
-        {
-          "gid": 4,
-          "height": 16,
-          "id": 36,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 224,
-          "y": 128
-        },
-
-        {
-          "gid": 4,
-          "height": 16,
-          "id": 37,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 224,
-          "y": 112
-        },
-        {
-          "gid": 1,
-          "height": 16,
-          "id": 21,
-          "name": "",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 16,
-          "x": 16,
-          "y": 240
         }
       ],
       "opacity": 1,
@@ -221,8 +247,8 @@
       "y": 0
     }
   ],
-  "nextlayerid": 3,
-  "nextobjectid": 39,
+  "nextlayerid": 6,
+  "nextobjectid": 37,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.11.2",
@@ -230,7 +256,7 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../../EscapeGameTileset.tsx"
+      "source": "../../../EscapeGameTileset.tsx"
     }
   ],
   "tilewidth": 16,

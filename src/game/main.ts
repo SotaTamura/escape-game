@@ -1,12 +1,9 @@
-import "./style.css";
 import {
-  moveSprites,
+  updateSprites,
   clearPressStart,
   pressStartEvent,
   pressingEvent,
   MAP_BLOCK_LEN,
-  $stageNum,
-  app,
   blockDashLine,
   setSprite,
   rotateTexture,
@@ -22,6 +19,7 @@ import {
   isNonAnimated,
   isAnimated,
 } from "./class.ts";
+
 export let gameObjs: GameObj[];
 export let players: Player[];
 export let blocks: Block[];
@@ -36,7 +34,6 @@ export let levers: GameObj[];
 export let buttons: GameObj[];
 export let questions: GameObj[];
 export let rotations: GameObj[];
-export let stageNum: number;
 
 // オブジェクト削除
 const remove = (obj: GameObj) => {
@@ -77,8 +74,6 @@ const activate = (color: string) => {
 };
 // マップ作成
 export const loadStage = async (i: number) => {
-  stageNum = i;
-  $stageNum.textContent = i.toString();
   // 初期化
   gameObjs = [];
   players = [];
@@ -86,7 +81,7 @@ export const loadStage = async (i: number) => {
   ladders = [];
   keys = [];
   oneways = [];
-  app.stage.removeChildren().forEach((child) => child.destroy());
+  // app.stage.removeChildren().forEach((child) => child.destroy());
   let data;
   try {
     data = await import(`./stagesJSON/stage${i}.json`);
@@ -171,7 +166,8 @@ export const loadStage = async (i: number) => {
       }
   }
 };
-export const update = () => {
+export let isComplete = false;
+export const update = (handleComplete: () => void) => {
   // プレイヤーの移動
   for (const player of players) {
     player.vy += 0.01; // 重力加速度
@@ -209,7 +205,9 @@ export const update = () => {
       player.top > MAP_BLOCK_LEN
     ) {
       remove(player);
-      if (players.length === 0) loadStage(stageNum + 1);
+      if (players.length === 0) {
+        handleComplete();
+      }
     }
   }
   // 鍵
@@ -222,5 +220,5 @@ export const update = () => {
       break;
     }
   clearPressStart();
-  moveSprites();
+  updateSprites();
 };

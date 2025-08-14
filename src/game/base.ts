@@ -5,65 +5,21 @@ import {
   isColorable,
   isNonAnimated,
 } from "./class.ts";
-import { loadStage, stageNum, gameObjs, update } from "./main.ts";
-import {
-  Application,
-  Assets,
-  Texture,
-  Container,
-  TilingSprite,
-  groupD8,
-} from "pixi.js";
+import { Assets, Texture, Container, TilingSprite, groupD8 } from "pixi.js";
+import { app } from "../pages/Game";
+import { gameObjs } from "./main.ts";
+
 // 定数
 const π = Math.PI;
-const STAGE_LEN = 8;
-const STEP = 1000 / 60;
-// 要素取得
-const $popup = document.getElementById("popup") as HTMLElement;
-const $restart = document.getElementsByClassName("restart")[0] as HTMLElement;
-export const $stageNum = document.getElementsByClassName(
-  "stageNum"
-)[0] as HTMLElement;
-const $backToMenu = document.getElementsByClassName("menu")[0] as HTMLElement;
-const $arrowBtns = document.getElementsByClassName(
-  "arrow"
-) as HTMLCollectionOf<HTMLElement>;
-const $stageSelectPage = document.getElementsByClassName(
-  "stageSelectPage"
-)[0] as HTMLElement;
-const $stageWrapper = document.getElementById("stageWrapper") as HTMLElement;
-// キャンバス
-export const app = new Application();
-let $can: HTMLCanvasElement;
-const RESOLUTION = 1024;
-const UNIT = RESOLUTION / 16;
+export const STAGE_LEN = 8;
+export const STEP = 1000 / 60;
+export const RESOLUTION = 1024;
 export const MAP_BLOCK_LEN = 16;
-// タッチ端末判定
-const isMobile =
-  window.ontouchstart !== undefined && navigator.maxTouchPoints > 0;
-// メニュー
-const stageSelectScreen = () => {
-  $stageSelectPage.style.display = "";
-  $can.style.display = "none";
-  $stageNum.style.display = "none";
-  for (let i = 0; i < $arrowBtns.length; i++)
-    $arrowBtns[i].style.display = "none";
-  $restart.style.display = "none";
-  $backToMenu.style.display = "none";
-};
-const playScreen = () => {
-  $stageSelectPage.style.display = "none";
-  $can.style.display = "";
-  if (isMobile)
-    for (let i = 0; i < $arrowBtns.length; i++)
-      $arrowBtns[i].style.display = "";
-  $restart.style.display = "";
-  $backToMenu.style.display = "";
-  $stageNum.style.display = "";
-};
-export let pressingEvent: Record<string, boolean> = {}, // 押し中
-  pressingTime: Record<string, number> = {},
-  pressStartEvent: Record<string, boolean> = {}; // 押し始め
+const UNIT = RESOLUTION / MAP_BLOCK_LEN;
+// キーイベント
+export let pressingEvent: Record<string, boolean> = {}; // 押し中
+export let pressingTimeForKeyboard: Record<string, number> = {};
+export let pressStartEvent: Record<string, boolean> = {}; // 押し始め
 const KEY_MAP: Record<string, string> = {
   ArrowUp: "up",
   w: "up",
@@ -152,7 +108,7 @@ export const changeTexture = (obj: GameObj, state: string) => {
   else throw new Error("The object does not extend Animated nor NonAnimated");
   editTexture(obj, state, rotId);
 };
-// sprite設定
+// sprite初期化
 export const setSprite = (obj: GameObj) => {
   let sprite;
   if (isAnimated(obj)) sprite = obj.animatedSprite;
@@ -226,7 +182,7 @@ export const blockDashLine = (obj: Block) => {
   app.stage.addChild(borderContainer);
 };
 // 描画更新
-export const moveSprites = () => {
+export const updateSprites = () => {
   gameObjs.forEach((obj) => {
     let sprite;
     if (isAnimated(obj)) sprite = obj.animatedSprite;
@@ -245,14 +201,14 @@ export const moveSprites = () => {
     }
   });
 };
-// 初期化即時関数
-(async () => {
+// 初期化関数
+export async function onLoad() {
   // 画像読み込み
   for (let i = 0; i <= 6; i++) {
-    await Assets.load(`./player${i}.png`);
+    await Assets.load(`/player${i}.png`);
   }
   playerTextures = [0, 1, 2, 3, 4, 5, 6].map((i) =>
-    Texture.from(`./player${i}.png`)
+    Texture.from(`/player${i}.png`)
   );
   playerIdleFrames = [playerTextures[0]];
   playerWalkFrames = [
@@ -265,13 +221,13 @@ export const moveSprites = () => {
   playerFallFrames = [playerTextures[4]];
   playerLadderMoveFrames = [playerTextures[4], playerTextures[5]];
   playerLadderIdleFrames = [playerTextures[6]];
-  blockTexture = await Assets.load("./block.png");
+  blockTexture = await Assets.load("/block.png");
   blockDeactivatedLineTexture = await Assets.load(
-    "./block_deactivated_line.png"
+    "/block_deactivated_line.png"
   );
-  ladderTexture = await Assets.load("./ladder.png");
-  keyTexture = await Assets.load("./key.png");
-  onewayTexture = await Assets.load("./oneway.png");
+  ladderTexture = await Assets.load("/ladder.png");
+  keyTexture = await Assets.load("/key.png");
+  onewayTexture = await Assets.load("/oneway.png");
   [
     ...playerTextures,
     blockTexture,
@@ -282,94 +238,24 @@ export const moveSprites = () => {
   ].forEach((texture) => {
     texture.source.scaleMode = "nearest";
   });
-  // pixiアプリケーション作成
-  await app.init({
-    backgroundAlpha: 0,
-    width: RESOLUTION,
-    height: RESOLUTION,
-    antialias: false,
-  });
-  $can = app.canvas;
-  $can.id = "main";
-  $popup.appendChild($can);
-  stageSelectScreen(); // ステージ選択画面
-  for (let i = 1; i <= STAGE_LEN; i++) {
-    const $stage = document.createElement("span");
-    $stage.setAttribute("class", "btn stage");
-    $stage.innerHTML = `<div class="icon">${i}</div>`;
-    // ステージ起動
-    $stage.addEventListener("click", async () => {
-      prevTime = undefined;
-      await loadStage(i);
-      playScreen();
-      requestAnimationFrame(gameLoop);
-    });
-    $stageWrapper.appendChild($stage);
-  }
-  // リスタート
-  $restart.addEventListener("click", () => loadStage(stageNum));
-  // メニューに戻る
-  $backToMenu.addEventListener("click", () => {
-    cancelAnimationFrame(loopId);
-    stageSelectScreen();
-  });
   // キーイベント
   document.addEventListener("keydown", (e) => {
     if (!Object.keys(KEY_MAP).includes(e.key)) return;
     const direction = KEY_MAP[e.key];
     pressingEvent[direction] = true;
-    pressStartEvent[direction] = !pressingTime[direction] ? true : false;
-    pressingTime[direction] =
-      pressingTime[direction] >= 0 ? pressingTime[direction] + 1 : 0;
+    pressStartEvent[direction] = !pressingTimeForKeyboard[direction]
+      ? true
+      : false;
+    pressingTimeForKeyboard[direction] =
+      pressingTimeForKeyboard[direction] >= 0
+        ? pressingTimeForKeyboard[direction] + 1
+        : 0;
   });
   document.addEventListener("keyup", (e) => {
     if (!Object.keys(KEY_MAP).includes(e.key)) return;
     const direction = KEY_MAP[e.key];
     pressingEvent[direction] = false;
-    pressingTime[direction] = 0;
+    pressingTimeForKeyboard[direction] = 0;
     pressStartEvent[direction] = false;
   });
-  const arrowBtnEventListener = (eventName: string) => {
-    // 画面上の矢印ボタン
-    document
-      .getElementsByClassName(eventName)[0]
-      .addEventListener("touchstart", () => {
-        pressingEvent[eventName] = true;
-        pressStartEvent[eventName] = true;
-      });
-    document.getElementsByClassName(eventName)[0].addEventListener(
-      "touchend",
-      (e) => {
-        pressingEvent[eventName] = false;
-        e.preventDefault();
-      },
-      false
-    );
-  };
-  arrowBtnEventListener("up");
-  arrowBtnEventListener("left");
-  arrowBtnEventListener("right");
-  arrowBtnEventListener("down");
-})();
-// 更新
-export let prevTime: number | undefined;
-let accumulator = 0;
-let dt: number;
-export let loopId: number;
-export const gameLoop = (timestamp: DOMHighResTimeStamp) => {
-  if (prevTime !== undefined) {
-    dt = Math.min(timestamp - prevTime, 100);
-  }
-  accumulator += dt ? dt : 0;
-  while (accumulator >= STEP) {
-    update();
-    accumulator -= STEP;
-  }
-  prevTime = timestamp;
-  loopId = requestAnimationFrame(gameLoop);
-};
-// 停止
-export const stop = () => {
-  window.cancelAnimationFrame(loopId);
-  prevTime = undefined;
-};
+}

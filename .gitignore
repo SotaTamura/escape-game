@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+EscapeGameTileset.tsx
+sprite.png
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

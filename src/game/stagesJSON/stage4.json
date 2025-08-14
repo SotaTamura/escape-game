@@ -17,7 +17,7 @@
                  "visible":true,
                  "width":32,
                  "x":16,
-                 "y":47
+                 "y":48
                 }, 
                 {
                  "gid":3,
@@ -297,7 +297,7 @@
                 }, 
                 {
                  "gid":2,
-                 "height":208,
+                 "height":200,
                  "id":53,
                  "name":"",
                  "rotation":0,
@@ -370,7 +370,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/EscapeGameTileset.tsx"
+         "source":"..\/..\/..\/EscapeGameTileset.tsx"
         }],
  "tilewidth":16,
  "type":"map",

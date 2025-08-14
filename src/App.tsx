@@ -1,0 +1,25 @@
+import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import SelectStage from "./pages/SelectStage";
+import Game from "./pages/Game";
+import { useEffect } from "react";
+import { onLoad } from "./game/base";
+
+export default function App() {
+  useEffect(() => {
+    onLoad();
+  });
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Home></Home>}></Route>
+        <Route
+          path="select-stage"
+          element={<SelectStage></SelectStage>}
+        ></Route>
+        <Route path="game/:id" element={<Game></Game>}></Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
