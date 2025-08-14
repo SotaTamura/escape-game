@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { pressingEvent, pressStartEvent } from "../game/base";
 
 export default function ArrowButton({ eventName }: { eventName: string }) {
@@ -9,14 +10,18 @@ export default function ArrowButton({ eventName }: { eventName: string }) {
     pressingEvent[eventName] = false;
     e.preventDefault();
   };
+  useEffect(() => {});
 
   return (
-    <div
-      className={`btn arrow ${eventName}`}
-      onTouchStart={HandleTouchStart}
-      onTouchEnd={HandleTouchEnd}
-    >
-      <img src={`/${eventName}.png`} alt="" className="icon" />
-    </div>
+    <>
+      <div
+        className={`btn arrow ${eventName}`}
+        onTouchStart={HandleTouchStart}
+        onTouchEnd={HandleTouchEnd}
+      >
+        <img src={`/${eventName}.png`} alt="" className="icon" />
+      </div>
+      <div className={`invisibleBtnCover ${eventName}`}></div>
+    </>
   );
 }

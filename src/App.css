@@ -112,6 +112,9 @@ body {
   position: relative;
   cursor: pointer;
 }
+.invisibleBtnCover {
+  background: transparent;
+}
 .btn .icon {
   position: absolute;
   top: 25%;

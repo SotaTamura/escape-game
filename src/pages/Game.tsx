@@ -62,14 +62,18 @@ export default function Game() {
         <div className="stageNum">{id}</div>
         <div
           className="btn restart"
-          onClick={() => setRestarter(restarter + 1)}
+          onClick={(e) => {
+            setRestarter(restarter + 1);
+            e.preventDefault();
+          }}
         >
           <img src="/restart.png" alt="" className="icon" />
         </div>
         <div
           className="btn menu"
-          onClick={() => {
+          onClick={(e) => {
             navigate("/select-stage");
+            e.preventDefault();
           }}
         >
           <img src="/menu.png" alt="" className="icon" />
@@ -88,8 +92,9 @@ export default function Game() {
             <div className="completeText">Stage Complete!</div>
             <div
               className="btn next"
-              onClick={() => {
+              onClick={(e) => {
                 navigate(`/game/${id + 1}`);
+                e.preventDefault();
               }}
             >
               <img src="/next.png" alt="" className="icon" />

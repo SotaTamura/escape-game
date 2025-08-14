@@ -7,8 +7,9 @@ export default function Home() {
       <p className="title">Escape Game (仮)</p>
       <div
         className="btn start"
-        onClick={() => {
+        onClick={(e) => {
           navigate("/select-stage");
+          e.preventDefault();
         }}
       >
         <img src="/right.png" alt="" className="icon" />

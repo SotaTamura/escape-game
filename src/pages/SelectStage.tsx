@@ -8,8 +8,9 @@ export default function SelectStage() {
     <div className="stageSelectScreen backGround">
       <div
         className="btn back"
-        onClick={() => {
+        onClick={(e) => {
           navigate("/");
+          e.preventDefault();
         }}
       >
         <img src="/left.png" alt="" className="icon" />
