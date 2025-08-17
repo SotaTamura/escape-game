@@ -21,7 +21,7 @@ import {
   isNonAnimated,
   isAnimated,
 } from "./class.ts";
-import { BitmapText, UNIFORM_TO_ARRAY_SETTERS } from "pixi.js";
+import { BitmapText } from "pixi.js";
 
 export let gameObjs: GameObj[];
 export let players: Player[];
