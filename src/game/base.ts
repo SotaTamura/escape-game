@@ -15,7 +15,7 @@ export const STAGE_LEN = 8;
 export const STEP = 1000 / 60;
 export const RESOLUTION = 1024;
 export const MAP_BLOCK_LEN = 16;
-const UNIT = RESOLUTION / MAP_BLOCK_LEN;
+export const UNIT = RESOLUTION / MAP_BLOCK_LEN;
 // キーイベント
 export let pressingEvent: Record<string, boolean> = {}; // 押し中
 export let pressingTimeForKeyboard: Record<string, number> = {};

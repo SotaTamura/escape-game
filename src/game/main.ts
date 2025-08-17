@@ -1,3 +1,4 @@
+import { app } from "../pages/Game.tsx";
 import {
   updateSprites,
   clearPressStart,
@@ -8,6 +9,7 @@ import {
   setSprite,
   rotateTexture,
   changeTexture,
+  UNIT,
 } from "./base.ts";
 import {
   GameObj,
@@ -19,6 +21,7 @@ import {
   isNonAnimated,
   isAnimated,
 } from "./class.ts";
+import { BitmapText, UNIFORM_TO_ARRAY_SETTERS } from "pixi.js";
 
 export let gameObjs: GameObj[];
 export let players: Player[];
@@ -34,6 +37,7 @@ export let levers: GameObj[];
 export let buttons: GameObj[];
 export let questions: GameObj[];
 export let rotations: GameObj[];
+export let texts: BitmapText[];
 
 // オブジェクト削除
 const remove = (obj: GameObj) => {
@@ -81,6 +85,7 @@ export const loadStage = async (i: number) => {
   ladders = [];
   keys = [];
   oneways = [];
+  texts = [];
   // app.stage.removeChildren().forEach((child) => child.destroy());
   let data;
   try {
@@ -96,73 +101,91 @@ export const loadStage = async (i: number) => {
         let newH = obj.height / 16;
         let newX = obj.x / 16;
         let newY = obj.y / 16;
-        if (obj.rotation === 0) {
-          newY -= newH;
-        } else if (obj.rotation === 90) {
-          [newW, newH] = [newH, newW];
-        } else if (obj.rotation === 180) {
-          newX -= newW;
-        } else if (obj.rotation === 270) {
-          [newW, newH] = [newH, newW];
-          newX -= newW;
-          newY -= newH;
-        }
-        if (obj.gid === 1) {
-          newObj = new Player(newX, newY, newW, newH, obj.rotation);
-          players.push(newObj);
-        } else if (obj.gid === 2) {
-          newObj = new Block(
-            newX,
-            newY,
-            newW,
-            newH,
-            obj.rotation,
-
-            true,
-            layer.tintcolor
-          );
-          blocks.push(newObj);
-          blockDashLine(newObj); // 点線囲い
-        } else if (obj.gid === 3) {
-          newObj = new Block(
-            newX,
-            newY,
-            newW,
-            newH,
-            obj.rotation,
-            false,
-            layer.tintcolor
-          );
-          blocks.push(newObj);
-          blockDashLine(newObj); // 点線囲い
-        } else if (obj.gid === 4) {
-          newObj = new Ladder(newX, newY, newW, newH, obj.rotation);
-          ladders.push(newObj);
-        } else if (obj.gid === 5) {
-          newObj = new Key(
-            newX,
-            newY,
-            newW,
-            newH,
-            obj.rotation,
-            layer.tintcolor
-          );
-          keys.push(newObj);
-        } else if (obj.gid === 6) {
-          newObj = new Oneway(
-            newX,
-            newY,
-            newW,
-            newH,
-            obj.rotation,
-            layer.tintcolor
-          );
-          oneways.push(newObj);
+        if (obj.text) {
+          const text = new BitmapText({
+            text: obj.text.text,
+            x: newX * UNIT,
+            y: newY * UNIT,
+            visible: false,
+            style: {
+              fontFamily: ["Orbitron", "Yusei Magic", "sans-serif"],
+              wordWrapWidth: newW * UNIT,
+              wordWrap: true,
+              fontSize: newH * UNIT,
+              breakWords: true,
+              fill: 0x000000,
+            },
+          });
+          texts.push(text);
+          app.stage.addChild(text);
         } else {
-          throw new Error(`Unknown gid ${obj.gid}`);
+          if (obj.rotation === 0) {
+            newY -= newH;
+          } else if (obj.rotation === 90) {
+            [newW, newH] = [newH, newW];
+          } else if (obj.rotation === 180) {
+            newX -= newW;
+          } else if (obj.rotation === 270) {
+            [newW, newH] = [newH, newW];
+            newX -= newW;
+            newY -= newH;
+          }
+          if (obj.gid === 1) {
+            newObj = new Player(newX, newY, newW, newH, obj.rotation);
+            players.push(newObj);
+          } else if (obj.gid === 2) {
+            newObj = new Block(
+              newX,
+              newY,
+              newW,
+              newH,
+              obj.rotation,
+              true,
+              layer.tintcolor
+            );
+            blocks.push(newObj);
+            blockDashLine(newObj); // 点線囲い
+          } else if (obj.gid === 3) {
+            newObj = new Block(
+              newX,
+              newY,
+              newW,
+              newH,
+              obj.rotation,
+              false,
+              layer.tintcolor
+            );
+            blocks.push(newObj);
+            blockDashLine(newObj); // 点線囲い
+          } else if (obj.gid === 4) {
+            newObj = new Ladder(newX, newY, newW, newH, obj.rotation);
+            ladders.push(newObj);
+          } else if (obj.gid === 5) {
+            newObj = new Key(
+              newX,
+              newY,
+              newW,
+              newH,
+              obj.rotation,
+              layer.tintcolor
+            );
+            keys.push(newObj);
+          } else if (obj.gid === 6) {
+            newObj = new Oneway(
+              newX,
+              newY,
+              newW,
+              newH,
+              obj.rotation,
+              layer.tintcolor
+            );
+            oneways.push(newObj);
+          } else {
+            throw new Error(`Unknown gid ${obj.gid}`);
+          }
+          gameObjs.push(newObj);
+          setSprite(newObj); // pixiに反映
         }
-        gameObjs.push(newObj);
-        setSprite(newObj); // pixiに反映
       }
   }
 };

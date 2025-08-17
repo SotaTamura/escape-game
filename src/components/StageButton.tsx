@@ -10,7 +10,7 @@ export default function StageButton({ i }: { i: number }) {
 
   return (
     <span className="btn stage" onClick={(e) => handleClick(i, e)}>
-      <div className="stageNum">{i}</div>
+      <div className="btnNum">{i}</div>
     </span>
   );
 }
