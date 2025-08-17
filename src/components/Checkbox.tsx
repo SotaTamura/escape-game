@@ -1,19 +1,16 @@
-import React, { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
 export default function Checkbox({
   id,
+  checked,
   onChange,
   children,
 }: {
   id: string;
-  onChange: (e: React.ChangeEvent) => void;
+  checked: boolean;
+  onChange: () => void;
   children: ReactNode;
 }) {
-  const [checked, setChecked] = useState(false);
-  const HandleChange = (e: React.ChangeEvent) => {
-    setChecked(!checked);
-    onChange(e);
-  };
   return (
     <label htmlFor={id}>
       <input
@@ -21,7 +18,7 @@ export default function Checkbox({
         name={id}
         id={id}
         checked={checked}
-        onChange={HandleChange}
+        onChange={onChange}
       />
       {children}
     </label>

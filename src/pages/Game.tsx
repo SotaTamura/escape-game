@@ -12,7 +12,8 @@ export default function Game() {
   const id = Number(useParams().id) || 1;
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const [restarter, setRestarter] = useState(0);
-  const [isComplete, SetIsComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  const [isTextGuideChecked, setIsTextGuideChecked] = useState(false);
   const navigate = useNavigate();
   const isMobile =
     window.ontouchstart !== undefined && navigator.maxTouchPoints > 0; // タッチ端末判定
@@ -27,14 +28,15 @@ export default function Game() {
     }
     accumulator += dt ? dt : 0;
     while (accumulator >= STEP) {
-      update(() => SetIsComplete(true));
+      update(() => setIsComplete(true));
       accumulator -= STEP;
     }
     prevTime = timestamp;
     loopId = requestAnimationFrame(gameLoop);
   };
   useEffect(() => {
-    SetIsComplete(false);
+    setIsComplete(false);
+    setIsTextGuideChecked(false);
     app = new Application();
     let $can: HTMLCanvasElement;
     (async () => {
@@ -81,24 +83,14 @@ export default function Game() {
       <div className="guides">
         <Checkbox
           id="txtGuide"
+          checked={isTextGuideChecked}
           onChange={() => {
-            texts.forEach((text) => (text.visible = !text.visible));
+            setIsTextGuideChecked(!isTextGuideChecked);
+            texts.forEach((text) => (text.visible = !isTextGuideChecked));
           }}
         >
           ヒント
         </Checkbox>
-        {/* <label htmlFor="txtGuide">
-          <input
-            type="checkbox"
-            name="txtGuide"
-            id="txtGuide"
-            checked
-            // onChange={(e) => {
-            //   texts.forEach((text) => (text.visible = e.target.checked));
-            // }}
-          />
-          ヒント
-        </label> */}
       </div>
       {isMobile && (
         <div className="controlBtns">

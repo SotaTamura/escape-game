@@ -137,7 +137,7 @@ body {
 .gameScreen {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 90px calc(100dvh - 360px) 35px 235px;
+  grid-template-rows: 60px calc(100dvh - 280px) 40px 180px;
   grid-template-areas:
     "num menu restart"
     "main main main"
@@ -157,22 +157,22 @@ input[type="checkbox"] {
 #main {
   width: 100dvmin;
   height: 100dvmin;
-  max-width: calc(100dvmax - 360px);
-  max-height: calc(100dvmax - 360px);
+  max-width: calc(100dvmax - 280px);
+  max-height: calc(100dvmax - 280px);
   margin: auto;
   grid-area: main;
 }
 .restart {
   grid-area: restart;
   width: 33dvw;
-  max-width: 135px;
+  max-width: 90px;
   aspect-ratio: 1.5;
   margin: auto;
 }
 .menu {
   grid-area: menu;
   width: 33dvw;
-  max-width: 135px;
+  max-width: 90px;
   aspect-ratio: 1.5;
   margin: auto;
 }
@@ -180,7 +180,7 @@ input[type="checkbox"] {
   grid-area: btn;
   margin: 0 auto;
   width: 100dvw;
-  max-width: 352px;
+  max-width: 270px;
   aspect-ratio: 1.5;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -203,6 +203,7 @@ input[type="checkbox"] {
   grid-area: right;
 }
 .complete {
+  z-index: 10;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 1fr;
@@ -216,10 +217,12 @@ input[type="checkbox"] {
   text-align: center;
 }
 .completeText {
+  z-index: 11;
   margin: 10dvmin;
   grid-area: text;
 }
 .next {
+  z-index: 11;
   grid-area: btn;
   width: 30dvmin;
   height: 20dvmin;
@@ -227,7 +230,7 @@ input[type="checkbox"] {
 }
 @media screen and (min-aspect-ratio: 1/1) {
   .gameScreen {
-    grid-template-columns: 180px calc(100dvw - 360px) 90px 90px;
+    grid-template-columns: 140px calc(100dvw - 280px) 70px 70px;
     grid-template-rows: 22dvh 30dvh 48dvh;
     grid-template-areas:
       "num  main menu restart"
@@ -239,14 +242,14 @@ input[type="checkbox"] {
   .arrow {
     background-image: url("/buttonUI1.png");
     height: 22dvh;
-    max-height: 135px;
+    max-height: 105px;
     width: initial;
     aspect-ratio: 0.66;
     margin: auto;
   }
   .controlBtns {
     display: grid;
-    grid-template-columns: 90px 90px calc(100dvw - 360px) 180px;
+    grid-template-columns: 70px 70px calc(100dvw - 280px) 140px;
     grid-template-rows: 24dvh 24dvh;
     grid-template-areas:
       "left right .... up"
