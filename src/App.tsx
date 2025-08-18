@@ -19,6 +19,7 @@ export default function App() {
           element={<SelectStage></SelectStage>}
         ></Route>
         <Route path="game/:id" element={<Game></Game>}></Route>
+        <Route path="*" element={<Home></Home>}></Route>
       </Routes>
     </BrowserRouter>
   );

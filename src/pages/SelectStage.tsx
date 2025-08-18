@@ -15,7 +15,7 @@ export default function SelectStage() {
       >
         <img src="/left.png" alt="" className="icon" />
       </div>
-      <div className="selectStageText">Select Stage</div>
+      <div className="selectStageText">ステージ選択</div>
       <div className="stageWrapperContainer">
         <div className="stageWrapper">
           {Array.from({ length: STAGE_LEN }, (_, k) => (

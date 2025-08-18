@@ -22,6 +22,7 @@ import {
   isAnimated,
 } from "./class.ts";
 import { BitmapText } from "pixi.js";
+import FontFaceObserver from "fontfaceobserver";
 
 export let gameObjs: GameObj[];
 export let players: Player[];
@@ -77,6 +78,7 @@ const activate = (color: string) => {
     }
 };
 // マップ作成
+const font = new FontFaceObserver("Yusei Magic");
 export const loadStage = async (i: number) => {
   // 初期化
   gameObjs = [];
@@ -86,7 +88,6 @@ export const loadStage = async (i: number) => {
   keys = [];
   oneways = [];
   texts = [];
-  // app.stage.removeChildren().forEach((child) => child.destroy());
   let data;
   try {
     data = await import(`./stagesJSON/stage${i}.json`);
@@ -102,22 +103,24 @@ export const loadStage = async (i: number) => {
         let newX = obj.x / 16;
         let newY = obj.y / 16;
         if (obj.text) {
-          const text = new BitmapText({
-            text: obj.text.text,
-            x: newX * UNIT,
-            y: newY * UNIT,
-            visible: false,
-            style: {
-              fontFamily: ["Orbitron", "Yusei Magic", "sans-serif"],
-              wordWrapWidth: newW * UNIT,
-              wordWrap: true,
-              fontSize: newH * UNIT,
-              breakWords: true,
-              fill: 0x000000,
-            },
+          font.load(obj.text.text).then(() => {
+            const text = new BitmapText({
+              text: obj.text.text,
+              x: newX * UNIT,
+              y: newY * UNIT,
+              visible: false,
+              style: {
+                fontFamily: ["Orbitron", "Yusei Magic", "sans-serif"],
+                wordWrapWidth: newW * UNIT,
+                wordWrap: true,
+                fontSize: newH * UNIT,
+                breakWords: true,
+                fill: 0x000000,
+              },
+            });
+            texts.push(text);
+            app.stage.addChild(text);
           });
-          texts.push(text);
-          app.stage.addChild(text);
         } else {
           if (obj.rotation === 0) {
             newY -= newH;

@@ -50,9 +50,9 @@ export default function Game() {
       $can = app.canvas;
       $can.id = "main";
       canvasWrapperRef.current?.appendChild($can);
+      loadStage(id);
+      requestAnimationFrame(gameLoop);
     })();
-    loadStage(id);
-    requestAnimationFrame(gameLoop);
     return () => {
       window.cancelAnimationFrame(loopId);
       app.destroy(true, { children: true });
