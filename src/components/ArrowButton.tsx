@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { pressingEvent, pressStartEvent } from "../game/base";
 
-export default function ArrowButton({ eventName }: { eventName: string }) {
+export default function ArrowButton({ eventName }: { eventName: "up" | "down" | "left" | "right" }) {
   const HandleTouchStart = () => {
     pressingEvent[eventName] = true;
     pressStartEvent[eventName] = true;
