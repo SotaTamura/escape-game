@@ -11,13 +11,13 @@ export default function SelectStage() {
         onClick={(e) => {
           navigate("/");
           e.preventDefault();
-        }}
-      >
+        }}>
         <img src="/left.png" alt="" className="icon" />
       </div>
-      <div className="selectStageText">ステージ選択</div>
+      <div className="selectStageText">ステージを選択</div>
       <div className="stageWrapperContainer">
         <div className="stageWrapper">
+          {import.meta.env.DEV && <StageButton i={0} key={0}></StageButton>}
           {Array.from({ length: STAGE_LEN }, (_, k) => (
             <StageButton i={k + 1} key={k + 1}></StageButton>
           ))}

@@ -10,8 +10,7 @@ export default function Home() {
         onClick={(e) => {
           navigate("/select-stage");
           e.preventDefault();
-        }}
-      >
+        }}>
         <img src="/right.png" alt="" className="icon" />
       </div>
     </div>

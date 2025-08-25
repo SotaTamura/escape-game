@@ -9,14 +9,13 @@ import Checkbox from "../components/Checkbox";
 export let app: Application; // pixiアプリケーション
 
 export default function Game() {
-  const id = Number(useParams().id) || 1;
+  const id = Number(useParams().id);
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const [restarter, setRestarter] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [isTextGuideChecked, setIsTextGuideChecked] = useState(false);
   const navigate = useNavigate();
-  const isMobile =
-    window.ontouchstart !== undefined && navigator.maxTouchPoints > 0; // タッチ端末判定
+  const isMobile = window.ontouchstart !== undefined && navigator.maxTouchPoints > 0; // タッチ端末判定
   // 更新
   let prevTime: number | undefined;
   let accumulator = 0;
@@ -45,7 +44,7 @@ export default function Game() {
         backgroundAlpha: 0,
         width: RESOLUTION,
         height: RESOLUTION,
-        antialias: false,
+        antialias: false
       });
       $can = app.canvas;
       $can.id = "main";
@@ -67,8 +66,7 @@ export default function Game() {
         onClick={(e) => {
           setRestarter(restarter + 1);
           e.preventDefault();
-        }}
-      >
+        }}>
         <img src="/restart.png" alt="" className="icon" />
       </div>
       <div
@@ -76,8 +74,7 @@ export default function Game() {
         onClick={(e) => {
           navigate("/select-stage");
           e.preventDefault();
-        }}
-      >
+        }}>
         <img src="/menu.png" alt="" className="icon" />
       </div>
       <div className="guides">
@@ -87,8 +84,7 @@ export default function Game() {
           onChange={() => {
             setIsTextGuideChecked(!isTextGuideChecked);
             texts.forEach((text) => (text.visible = !isTextGuideChecked));
-          }}
-        >
+          }}>
           ヒント
         </Checkbox>
       </div>
@@ -102,14 +98,13 @@ export default function Game() {
       )}
       {isComplete && (
         <div className="complete">
-          <div className="completeText">Stage Complete!</div>
+          <div className="completeText">stage complete!</div>
           <div
             className="btn next"
             onClick={(e) => {
               navigate(`/game/${id + 1}`);
               e.preventDefault();
-            }}
-          >
+            }}>
             <img src="/next.png" alt="" className="icon" />
           </div>
         </div>

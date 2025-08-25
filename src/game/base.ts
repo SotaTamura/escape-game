@@ -1,26 +1,21 @@
-import {
-  Block,
-  GameObj,
-  isAnimated,
-  isColorable,
-  isNonAnimated,
-} from "./class.ts";
+import { Block, GameObj, isAnimated, isColorable, isNonAnimated } from "./class.ts";
 import { Assets, Texture, Container, TilingSprite, groupD8 } from "pixi.js";
 import { app } from "../pages/Game";
 import { gameObjs } from "./main.ts";
 
 // 定数
 const π = Math.PI;
-export const STAGE_LEN = 8;
+export const STAGE_LEN = 14;
 export const STEP = 1000 / 60;
 export const RESOLUTION = 1024;
 export const MAP_BLOCK_LEN = 16;
 export const UNIT = RESOLUTION / MAP_BLOCK_LEN;
+export const PX_PER_UNIT = 16;
 // キーイベント
-export let pressingEvent: Record<string, boolean> = {}; // 押し中
-export let pressingTimeForKeyboard: Record<string, number> = {};
-export let pressStartEvent: Record<string, boolean> = {}; // 押し始め
-const KEY_MAP: Record<string, string> = {
+export let pressingEvent: Record<"up" | "down" | "left" | "right", boolean> = { up: false, down: false, left: false, right: false }; // 押し中
+export let pressingTimeForKeyboard: Record<"up" | "down" | "left" | "right", number> = { up: 0, down: 0, left: 0, right: 0 };
+export let pressStartEvent: Record<"up" | "down" | "left" | "right", boolean> = { up: false, down: false, left: false, right: false }; // 押し始め
+const KEY_MAP: Record<string, "up" | "down" | "left" | "right"> = {
   ArrowUp: "up",
   w: "up",
   " ": "up",
@@ -29,13 +24,11 @@ const KEY_MAP: Record<string, string> = {
   ArrowLeft: "left",
   a: "left",
   ArrowRight: "right",
-  d: "right",
+  d: "right"
 };
 // 押し始めイベントをリセット
 export const clearPressStart = () => {
-  Object.keys(pressStartEvent).forEach(
-    (eventName) => (pressStartEvent[eventName] = false)
-  );
+  pressStartEvent = { up: false, down: false, left: false, right: false };
 };
 // 画像
 export let playerTextures: Texture[];
@@ -50,6 +43,9 @@ export let blockDeactivatedLineTexture: Texture;
 export let ladderTexture: Texture;
 export let keyTexture: Texture;
 export let onewayTexture: Texture;
+export let leverTextures: Texture[];
+export let portalTexture: Texture;
+export let pushBlockTexture: Texture;
 // sprite加工
 export const editTexture = (obj: GameObj, state: string, newRotId: number) => {
   const key = `${state}_${newRotId}`;
@@ -61,7 +57,7 @@ export const editTexture = (obj: GameObj, state: string, newRotId: number) => {
         (texture) =>
           new Texture({
             source: (texture as Texture).source,
-            rotate: newRotId,
+            rotate: newRotId
           })
       );
       obj.animatedSprite.textures = newFrames;
@@ -74,7 +70,7 @@ export const editTexture = (obj: GameObj, state: string, newRotId: number) => {
     } else {
       const newTexture = new Texture({
         source: obj.baseTextures[state].source,
-        rotate: newRotId,
+        rotate: newRotId
       });
       obj.sprite.texture = newTexture;
       obj.generatedTextures.set(key, newTexture);
@@ -93,11 +89,7 @@ export const flipX = (obj: GameObj) => {
   if (isAnimated(obj)) rotId = obj.animatedSprite.texture.rotate;
   else if (isNonAnimated(obj)) rotId = obj.sprite.texture.rotate;
   else throw new Error("The object does not extend Animated nor NonAnimated");
-  editTexture(
-    obj,
-    obj.textureState,
-    groupD8.add(groupD8.MIRROR_HORIZONTAL, rotId)
-  );
+  editTexture(obj, obj.textureState, groupD8.add(groupD8.MIRROR_HORIZONTAL, rotId));
 };
 export const changeTexture = (obj: GameObj, state: string) => {
   if (obj.textureState === state) return;
@@ -139,7 +131,7 @@ export const blockDashLine = (obj: Block) => {
   const topEdge = new TilingSprite({
     texture: blockDeactivatedLineTexture,
     width: w,
-    height: borderThickness,
+    height: borderThickness
   });
   topEdge.x = 0;
   topEdge.y = 0;
@@ -149,7 +141,7 @@ export const blockDashLine = (obj: Block) => {
   const bottomEdge = new TilingSprite({
     texture: blockDeactivatedLineTexture,
     width: w,
-    height: borderThickness,
+    height: borderThickness
   });
   bottomEdge.rotation = π;
   bottomEdge.x = w;
@@ -160,7 +152,7 @@ export const blockDashLine = (obj: Block) => {
   const leftEdge = new TilingSprite({
     texture: blockDeactivatedLineTexture,
     width: h,
-    height: borderThickness,
+    height: borderThickness
   });
   leftEdge.rotation = -π / 2;
   leftEdge.x = 0;
@@ -171,7 +163,7 @@ export const blockDashLine = (obj: Block) => {
   const rightEdge = new TilingSprite({
     texture: blockDeactivatedLineTexture,
     width: h,
-    height: borderThickness,
+    height: borderThickness
   });
   rightEdge.rotation = π / 2;
   rightEdge.x = w;
@@ -207,35 +199,22 @@ export async function onLoad() {
   for (let i = 0; i <= 6; i++) {
     await Assets.load(`/player${i}.png`);
   }
-  playerTextures = [0, 1, 2, 3, 4, 5, 6].map((i) =>
-    Texture.from(`/player${i}.png`)
-  );
+  playerTextures = [0, 1, 2, 3, 4, 5, 6].map((i) => Texture.from(`/player${i}.png`));
   playerIdleFrames = [playerTextures[0]];
-  playerWalkFrames = [
-    playerTextures[1],
-    playerTextures[0],
-    playerTextures[2],
-    playerTextures[0],
-  ];
+  playerWalkFrames = [playerTextures[1], playerTextures[0], playerTextures[2], playerTextures[0]];
   playerJumpFrames = [playerTextures[3]];
   playerFallFrames = [playerTextures[4]];
   playerLadderMoveFrames = [playerTextures[4], playerTextures[5]];
   playerLadderIdleFrames = [playerTextures[6]];
   blockTexture = await Assets.load("/block.png");
-  blockDeactivatedLineTexture = await Assets.load(
-    "/block_deactivated_line.png"
-  );
+  blockDeactivatedLineTexture = await Assets.load("/block_deactivated_line.png");
   ladderTexture = await Assets.load("/ladder.png");
   keyTexture = await Assets.load("/key.png");
   onewayTexture = await Assets.load("/oneway.png");
-  [
-    ...playerTextures,
-    blockTexture,
-    blockDeactivatedLineTexture,
-    ladderTexture,
-    keyTexture,
-    onewayTexture,
-  ].forEach((texture) => {
+  leverTextures = [await Assets.load("/lever_off.png"), await Assets.load("/lever_on.png")];
+  portalTexture = await Assets.load("/portalOld.png");
+  pushBlockTexture = await Assets.load("/pushblock.png");
+  [...playerTextures, blockTexture, blockDeactivatedLineTexture, ladderTexture, keyTexture, onewayTexture, ...leverTextures, portalTexture, pushBlockTexture].forEach((texture) => {
     texture.source.scaleMode = "nearest";
   });
   // キーイベント
@@ -243,13 +222,8 @@ export async function onLoad() {
     if (!Object.keys(KEY_MAP).includes(e.key)) return;
     const direction = KEY_MAP[e.key];
     pressingEvent[direction] = true;
-    pressStartEvent[direction] = !pressingTimeForKeyboard[direction]
-      ? true
-      : false;
-    pressingTimeForKeyboard[direction] =
-      pressingTimeForKeyboard[direction] >= 0
-        ? pressingTimeForKeyboard[direction] + 1
-        : 0;
+    pressStartEvent[direction] = !pressingTimeForKeyboard[direction] ? true : false;
+    pressingTimeForKeyboard[direction] = pressingTimeForKeyboard[direction] >= 0 ? pressingTimeForKeyboard[direction] + 1 : 0;
   });
   document.addEventListener("keyup", (e) => {
     if (!Object.keys(KEY_MAP).includes(e.key)) return;

@@ -1,48 +1,27 @@
 import { app } from "../pages/Game.tsx";
-import {
-  updateSprites,
-  clearPressStart,
-  pressStartEvent,
-  pressingEvent,
-  MAP_BLOCK_LEN,
-  blockDashLine,
-  setSprite,
-  rotateTexture,
-  changeTexture,
-  UNIT,
-} from "./base.ts";
-import {
-  GameObj,
-  Player,
-  Block,
-  Ladder,
-  Key,
-  Oneway,
-  isNonAnimated,
-  isAnimated,
-} from "./class.ts";
+import { updateSprites, clearPressStart, pressStartEvent, MAP_BLOCK_LEN, blockDashLine, setSprite, rotateTexture, changeTexture, UNIT, PX_PER_UNIT } from "./base.ts";
+import { GameObj, Player, Block, Ladder, Key, Oneway, isNonAnimated, isAnimated, Lever, PushBlock, Portal } from "./class.ts";
 import { BitmapText } from "pixi.js";
-import FontFaceObserver from "fontfaceobserver";
 
+export let texts: BitmapText[];
+export let portalTexts: BitmapText[];
 export let gameObjs: GameObj[];
 export let players: Player[];
 export let blocks: Block[];
 export let ladders: Ladder[];
 export let keys: Key[];
 export let oneways: Oneway[];
-export let pushBlocks: GameObj[];
-export let moveBlocks: GameObj[];
-export let goals: GameObj[];
-export let portals: GameObj[];
-export let levers: GameObj[];
-export let buttons: GameObj[];
-export let questions: GameObj[];
-export let rotations: GameObj[];
-export let texts: BitmapText[];
+export let levers: Lever[];
+export let pushBlocks: PushBlock[];
+// export let moveBlocks: GameObj[];
+export let portals: Portal[];
+// export let buttons: GameObj[];
+// export let questions: GameObj[];
+// export let rotations: GameObj[];
 
 // オブジェクト削除
 const remove = (obj: GameObj) => {
-  const typeArrays: GameObj[][] = [players, blocks, ladders, keys, oneways];
+  const typeArrays: GameObj[][] = [players, blocks, ladders, keys, oneways, levers, portals, pushBlocks];
   for (let typeArray of typeArrays) {
     const index = typeArray.indexOf(obj);
     if (index !== -1) {
@@ -78,16 +57,19 @@ const activate = (color: string) => {
     }
 };
 // マップ作成
-const font = new FontFaceObserver("Yusei Magic");
 export const loadStage = async (i: number) => {
   // 初期化
+  portalTexts = [];
+  texts = [];
   gameObjs = [];
   players = [];
   blocks = [];
   ladders = [];
   keys = [];
   oneways = [];
-  texts = [];
+  levers = [];
+  portals = [];
+  pushBlocks = [];
   let data;
   try {
     data = await import(`./stagesJSON/stage${i}.json`);
@@ -98,29 +80,27 @@ export const loadStage = async (i: number) => {
     if (layer.objects)
       for (let obj of layer.objects) {
         let newObj;
-        let newW = obj.width / 16;
-        let newH = obj.height / 16;
-        let newX = obj.x / 16;
-        let newY = obj.y / 16;
+        let newW = obj.width / PX_PER_UNIT;
+        let newH = obj.height / PX_PER_UNIT;
+        let newX = obj.x / PX_PER_UNIT;
+        let newY = obj.y / PX_PER_UNIT;
         if (obj.text) {
-          font.load(obj.text.text).then(() => {
-            const text = new BitmapText({
-              text: obj.text.text,
-              x: newX * UNIT,
-              y: newY * UNIT,
-              visible: false,
-              style: {
-                fontFamily: ["Orbitron", "Yusei Magic", "sans-serif"],
-                wordWrapWidth: newW * UNIT,
-                wordWrap: true,
-                fontSize: newH * UNIT,
-                breakWords: true,
-                fill: 0x000000,
-              },
-            });
-            texts.push(text);
-            app.stage.addChild(text);
+          const text = new BitmapText({
+            text: obj.text.text,
+            x: newX * UNIT,
+            y: newY * UNIT,
+            visible: false,
+            style: {
+              fontFamily: ["Makinas", "sans-serif"],
+              wordWrapWidth: newW * UNIT,
+              wordWrap: true,
+              fontSize: newH * UNIT,
+              breakWords: true,
+              fill: 0x000000
+            }
           });
+          texts.push(text);
+          app.stage.addChild(text);
         } else {
           if (obj.rotation === 0) {
             newY -= newH;
@@ -137,52 +117,31 @@ export const loadStage = async (i: number) => {
             newObj = new Player(newX, newY, newW, newH, obj.rotation);
             players.push(newObj);
           } else if (obj.gid === 2) {
-            newObj = new Block(
-              newX,
-              newY,
-              newW,
-              newH,
-              obj.rotation,
-              true,
-              layer.tintcolor
-            );
+            newObj = new Block(newX, newY, newW, newH, obj.rotation, true, layer.tintcolor);
             blocks.push(newObj);
             blockDashLine(newObj); // 点線囲い
           } else if (obj.gid === 3) {
-            newObj = new Block(
-              newX,
-              newY,
-              newW,
-              newH,
-              obj.rotation,
-              false,
-              layer.tintcolor
-            );
+            newObj = new Block(newX, newY, newW, newH, obj.rotation, false, layer.tintcolor);
             blocks.push(newObj);
             blockDashLine(newObj); // 点線囲い
           } else if (obj.gid === 4) {
             newObj = new Ladder(newX, newY, newW, newH, obj.rotation);
             ladders.push(newObj);
           } else if (obj.gid === 5) {
-            newObj = new Key(
-              newX,
-              newY,
-              newW,
-              newH,
-              obj.rotation,
-              layer.tintcolor
-            );
+            newObj = new Key(newX, newY, newW, newH, obj.rotation, layer.tintcolor);
             keys.push(newObj);
           } else if (obj.gid === 6) {
-            newObj = new Oneway(
-              newX,
-              newY,
-              newW,
-              newH,
-              obj.rotation,
-              layer.tintcolor
-            );
+            newObj = new Oneway(newX, newY, newW, newH, obj.rotation, layer.tintcolor);
             oneways.push(newObj);
+          } else if (obj.gid === 7) {
+            newObj = new Portal(newX, newY, newW, newH, obj.rotation, obj.type);
+            portals.push(newObj);
+          } else if (obj.gid === 8) {
+            newObj = new Lever(newX, newY, newW, newH, obj.rotation, layer.tintcolor);
+            levers.push(newObj);
+          } else if (obj.gid === 9) {
+            newObj = new PushBlock(newX, newY, newW, newH, obj.rotation);
+            pushBlocks.push(newObj);
           } else {
             throw new Error(`Unknown gid ${obj.gid}`);
           }
@@ -191,60 +150,93 @@ export const loadStage = async (i: number) => {
         }
       }
   }
+  for (const portal of portals) {
+    const portalText = new BitmapText({
+      text: portal.id,
+      x: (portal.x + portal.w / 2) * UNIT,
+      y: (portal.y + portal.h / 2) * UNIT,
+      style: {
+        fontFamily: ["Makinas", "sans-serif"],
+        fontSize: (3 / 4) * UNIT,
+        fill: 0xffffff,
+        align: "center"
+      }
+    });
+    portalText.anchor.set(0.5);
+    portalTexts.push(portalText);
+    app.stage.addChild(portalText);
+  }
 };
 export let isComplete = false;
 export const update = (handleComplete: () => void) => {
-  // プレイヤーの移動
+  // 動くオブジェクト
   for (const player of players) {
+    player.strength = { top: player.initStrength, bottom: player.initStrength, left: player.initStrength, right: player.initStrength };
+    player.isOnBlock = null;
     player.vy += 0.01; // 重力加速度
     player.handleLadder(ladders); //ハシゴ
-    const otherSolidObjs = gameObjs.filter(
-      (obj) => obj !== player && obj.isSolid
-    );
+    player.handlePortal(portals); //ポータル
     player.handleHorizontalMove(); // 左右移動
-    player.isOnBlock = null;
-    player.isOnLadder = null;
-    player.collideBottom(otherSolidObjs); // 着地
-    player.collideBottomWithLadder(ladders); // ハシゴの上に着地
-    if (pressStartEvent.up && (player.isOnBlock || player.isOnLadder))
-      player.vy = -0.2; // ジャンプ
-    player.collideTop(otherSolidObjs); // 天井衝突
-    player.collideLeft(otherSolidObjs); // 左壁衝突
-    player.collideRight(otherSolidObjs); // 右壁衝突
-    if (player.isInLadder) {
-      if (pressingEvent.up || pressingEvent.down)
-        changeTexture(player, "ladderMove");
-      else changeTexture(player, "ladderIdle");
-    } else if (!(player.isOnBlock || player.isOnLadder))
-      changeTexture(player, "jump");
-    else {
-      if (player.vx === 0) changeTexture(player, "idle");
-      else changeTexture(player, "walk");
+  }
+  for (const pushBlock of pushBlocks) {
+    pushBlock.vx = 0;
+    pushBlock.strength = { top: pushBlock.initStrength, bottom: pushBlock.initStrength, left: pushBlock.initStrength, right: pushBlock.initStrength };
+    pushBlock.isOnBlock = null;
+    pushBlock.vy += 0.01; // 重力加速度
+    pushBlock.handleLadder(ladders); //ハシゴ
+    pushBlock.handlePortal(portals); //ポータル
+  }
+  for (let i = 0; i < [...players, ...pushBlocks].length; i++) {
+    for (const moveObj of [...players, ...pushBlocks]) {
+      const otherSolidObjs = gameObjs.filter((obj) => obj !== moveObj && obj.isSolid);
+      moveObj.collideBottom([...otherSolidObjs, ...ladders]); // 着地
+      moveObj.collideTop(otherSolidObjs); // 天井衝突
+      moveObj.collideLeft(otherSolidObjs); // 左壁衝突
+      moveObj.collideRight(otherSolidObjs); // 右壁衝突
     }
+  }
+  for (const player of players) {
+    const otherSolidObjs = gameObjs.filter((obj) => obj !== player && obj.isSolid);
+    if (pressStartEvent.up && player.isOnBlock) player.vy = -0.2; // ジャンプ
+    player.collideTop(otherSolidObjs); // 天井衝突
+    player.handleTexture();
     player.x += player.vx;
     player.y += player.vy; // 移動
-    // ゴール
-    if (
-      player.right < 0 ||
-      player.left > MAP_BLOCK_LEN ||
-      player.bottom < 0 ||
-      player.top > MAP_BLOCK_LEN
-    ) {
+    if (player.right < 0 || player.left > MAP_BLOCK_LEN || player.bottom < 0 || player.top > MAP_BLOCK_LEN) {
+      // ゴール
       remove(player);
       if (players.length === 0) {
         handleComplete();
       }
     }
   }
+  for (const pushBlock of pushBlocks) {
+    pushBlock.x += pushBlock.vx;
+    pushBlock.y += pushBlock.vy; // 移動
+    if (pushBlock.right < 0 || pushBlock.left > MAP_BLOCK_LEN || pushBlock.bottom < 0 || pushBlock.top > MAP_BLOCK_LEN) {
+      // ゴール
+      remove(pushBlock);
+    }
+  }
   // 鍵
   for (const key of keys)
-    for (const player of players) {
-      if (player.colliding(key)) {
-        remove(key);
-        activate(key.color);
-      }
-      break;
+    if (players.some((player) => player.colliding(key))) {
+      remove(key);
+      activate(key.color);
     }
+  // レバー
+  for (const lever of levers) {
+    const isColliding = players.some((player) => player.colliding(lever));
+    if (isColliding) {
+      if (!lever.isPlayerContacting) {
+        activate(lever.color);
+        changeTexture(lever, lever.textureState === "on" ? "off" : "on");
+        lever.isPlayerContacting = true;
+      }
+    } else {
+      lever.isPlayerContacting = false;
+    }
+  }
   clearPressStart();
   updateSprites();
 };
