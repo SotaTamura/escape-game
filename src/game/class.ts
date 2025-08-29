@@ -95,6 +95,10 @@ export abstract class GameObj {
       if (this.innerHitboxBottom <= obj.hitboxTop && this.hitboxBottom + this.vy >= obj.hitboxTop + obj.vy && !((this.innerHitboxRight <= obj.hitboxLeft || this.innerHitboxLeft >= obj.hitboxRight) && (this.innerHitboxRight + this.vx <= obj.hitboxLeft + obj.vx || this.innerHitboxLeft + this.vx >= obj.hitboxRight + obj.vx))) {
         if (!nearestObj || obj.hitboxTop > nearestObj.hitboxTop) {
           nearestObj = obj;
+        } else if (nearestObj && obj.hitboxTop === nearestObj.hitboxTop) {
+          if (obj.initStrength > nearestObj.initStrength) {
+            nearestObj = obj;
+          }
         }
       }
     }
@@ -113,6 +117,10 @@ export abstract class GameObj {
       if (this.innerHitboxTop >= obj.hitboxBottom && this.hitboxTop + this.vy <= obj.hitboxBottom + obj.vy && !((this.innerHitboxRight <= obj.hitboxLeft || this.innerHitboxLeft >= obj.hitboxRight) && (this.innerHitboxRight + this.vx <= obj.hitboxLeft + obj.vx || this.innerHitboxLeft + this.vx >= obj.hitboxRight + obj.vx))) {
         if (!nearestObj || obj.hitboxBottom < nearestObj.hitboxBottom) {
           nearestObj = obj;
+        } else if (nearestObj && obj.hitboxBottom === nearestObj.hitboxBottom) {
+          if (obj.initStrength > nearestObj.initStrength) {
+            nearestObj = obj;
+          }
         }
       }
     }
@@ -129,6 +137,10 @@ export abstract class GameObj {
       if (this.innerHitboxLeft >= obj.hitboxRight && this.hitboxLeft + this.vx <= obj.hitboxRight + obj.vx && !((this.innerHitboxBottom <= obj.hitboxTop || this.innerHitboxTop >= obj.hitboxBottom) && (this.innerHitboxBottom + this.vy <= obj.hitboxTop + obj.vy || this.innerHitboxTop + this.vy >= obj.hitboxBottom + obj.vy))) {
         if (!nearestObj || obj.hitboxRight > nearestObj.hitboxRight) {
           nearestObj = obj;
+        } else if (nearestObj && obj.hitboxRight === nearestObj.hitboxRight) {
+          if (obj.initStrength > nearestObj.initStrength) {
+            nearestObj = obj;
+          }
         }
       }
     }
@@ -145,6 +157,10 @@ export abstract class GameObj {
       if (this.innerHitboxRight <= obj.hitboxLeft && this.hitboxRight + this.vx >= obj.hitboxLeft + obj.vx && !((this.innerHitboxBottom <= obj.hitboxTop || this.innerHitboxTop >= obj.hitboxBottom) && (this.innerHitboxBottom + this.vy <= obj.hitboxTop + obj.vy || this.innerHitboxTop + this.vy >= obj.hitboxBottom + obj.vy))) {
         if (!nearestObj || obj.hitboxLeft < nearestObj.hitboxLeft) {
           nearestObj = obj;
+        } else if (nearestObj && obj.hitboxLeft === nearestObj.hitboxLeft) {
+          if (obj.initStrength > nearestObj.initStrength) {
+            nearestObj = obj;
+          }
         }
       }
     }
@@ -226,6 +242,10 @@ export class Player extends GameObj implements Animated {
       else if (((obj instanceof Ladder && !pressingEvent.down && this.hitboxBottom <= obj.hitboxTop && this.hitboxBottom + this.vy >= obj.hitboxTop + obj.vy) || !(obj instanceof Ladder)) && this.innerHitboxBottom <= obj.hitboxTop && this.hitboxBottom + this.vy >= obj.hitboxTop + obj.vy && !((this.innerHitboxRight <= obj.hitboxLeft || this.innerHitboxLeft >= obj.hitboxRight) && (this.innerHitboxRight + this.vx < obj.hitboxLeft + obj.vx || this.innerHitboxLeft + this.vx > obj.hitboxRight + obj.vx))) {
         if (!nearestObj || obj.hitboxTop > nearestObj.hitboxTop) {
           nearestObj = obj;
+        } else if (nearestObj && obj.hitboxTop === nearestObj.hitboxTop) {
+          if (obj.initStrength > nearestObj.initStrength) {
+            nearestObj = obj;
+          }
         }
       }
     }

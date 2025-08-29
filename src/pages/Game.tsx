@@ -1,8 +1,8 @@
 import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
-import { RESOLUTION, STEP } from "../game/base";
+import { RESOLUTION, STAGE_LEN, STEP } from "../game/base";
 import { useNavigate, useParams } from "react-router-dom";
-import { loadStage, texts, update } from "../game/main";
+import { loadStage, hintTexts, update } from "../game/main";
 import ArrowButton from "../components/ArrowButton";
 import Checkbox from "../components/Checkbox";
 
@@ -49,7 +49,7 @@ export default function Game() {
       $can = app.canvas;
       $can.id = "main";
       canvasWrapperRef.current?.appendChild($can);
-      loadStage(id);
+      await loadStage(id);
       requestAnimationFrame(gameLoop);
     })();
     return () => {
@@ -83,7 +83,7 @@ export default function Game() {
           checked={isTextGuideChecked}
           onChange={() => {
             setIsTextGuideChecked(!isTextGuideChecked);
-            texts.forEach((text) => (text.visible = !isTextGuideChecked));
+            hintTexts.forEach((text) => (text.visible = !isTextGuideChecked));
           }}>
           ヒント
         </Checkbox>
@@ -99,14 +99,25 @@ export default function Game() {
       {isComplete && (
         <div className="complete">
           <div className="completeText">stage complete!</div>
-          <div
-            className="btn next"
-            onClick={(e) => {
-              navigate(`/game/${id + 1}`);
-              e.preventDefault();
-            }}>
-            <img src="/next.png" alt="" className="icon" />
-          </div>
+          {id === STAGE_LEN ? (
+            <div
+              className="btn next"
+              onClick={(e) => {
+                navigate("/select-stage");
+                e.preventDefault();
+              }}>
+              <img src="/menu.png" alt="" className="icon" />
+            </div>
+          ) : (
+            <div
+              className="btn next"
+              onClick={(e) => {
+                navigate(`/game/${id + 1}`);
+                e.preventDefault();
+              }}>
+              <img src="/next.png" alt="" className="icon" />
+            </div>
+          )}
         </div>
       )}
     </div>

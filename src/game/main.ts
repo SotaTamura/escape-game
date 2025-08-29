@@ -3,7 +3,7 @@ import { updateSprites, clearPressStart, pressStartEvent, MAP_BLOCK_LEN, blockDa
 import { GameObj, Player, Block, Ladder, Key, Oneway, isNonAnimated, isAnimated, Lever, PushBlock, Portal } from "./class.ts";
 import { BitmapText } from "pixi.js";
 
-export let texts: BitmapText[];
+export let hintTexts: BitmapText[];
 export let portalTexts: BitmapText[];
 export let gameObjs: GameObj[];
 export let players: Player[];
@@ -60,7 +60,7 @@ const activate = (color: string) => {
 export const loadStage = async (i: number) => {
   // 初期化
   portalTexts = [];
-  texts = [];
+  hintTexts = [];
   gameObjs = [];
   players = [];
   blocks = [];
@@ -99,7 +99,7 @@ export const loadStage = async (i: number) => {
               fill: 0x000000
             }
           });
-          texts.push(text);
+          hintTexts.push(text);
           app.stage.addChild(text);
         } else {
           if (obj.rotation === 0) {
@@ -190,6 +190,7 @@ export const update = (handleComplete: () => void) => {
     for (const moveObj of [...players, ...pushBlocks]) {
       const otherSolidObjs = gameObjs.filter((obj) => obj !== moveObj && obj.isSolid);
       moveObj.collideBottom([...otherSolidObjs, ...ladders]); // 着地
+      if (moveObj instanceof Player && pressStartEvent.up && moveObj.isOnBlock) moveObj.vy = -0.2; // ジャンプ
       moveObj.collideTop(otherSolidObjs); // 天井衝突
       moveObj.collideLeft(otherSolidObjs); // 左壁衝突
       moveObj.collideRight(otherSolidObjs); // 右壁衝突
@@ -197,7 +198,7 @@ export const update = (handleComplete: () => void) => {
   }
   for (const player of players) {
     const otherSolidObjs = gameObjs.filter((obj) => obj !== player && obj.isSolid);
-    if (pressStartEvent.up && player.isOnBlock) player.vy = -0.2; // ジャンプ
+
     player.collideTop(otherSolidObjs); // 天井衝突
     player.handleTexture();
     player.x += player.vx;
