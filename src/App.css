@@ -4,14 +4,13 @@
 }
 * {
   padding: 0;
+  margin: 0;
   box-sizing: border-box;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   color: #fff;
   touch-action: none;
-  text-align: center;
-  margin: 0 auto;
 }
 img {
   pointer-events: none;
@@ -35,6 +34,7 @@ body {
   position: relative;
 }
 .backGround {
+  text-align: center;
   position: fixed;
   top: 0;
   left: 0;
@@ -77,7 +77,6 @@ body {
   width: 18dvmin;
   height: 12dvmin;
   grid-area: back;
-  margin-left: 10px;
 }
 .selectStageText {
   grid-area: txt;
@@ -130,6 +129,7 @@ body {
   color: #333;
   border: #333 solid 2px;
   cursor: pointer;
+  text-align: center;
 }
 .stage {
   width: 20dvmin;
@@ -162,8 +162,6 @@ input[type="checkbox"] {
   grid-area: guide;
   font-size: 20px;
   text-align: left;
-  width: 100dvw;
-  height: 40px;
 }
 .guide {
   width: 80px;
@@ -194,6 +192,7 @@ input[type="checkbox"] {
 }
 .controlBtns {
   grid-area: btn;
+  margin: 0 auto;
   width: 100dvw;
   max-width: 270px;
   aspect-ratio: 1.5;
@@ -206,19 +205,15 @@ input[type="checkbox"] {
     "... down ...";
 }
 .up {
-  aspect-ratio: 1.5;
   grid-area: up;
 }
 .left {
-  aspect-ratio: 1.5;
   grid-area: left;
 }
 .down {
-  aspect-ratio: 1.5;
   grid-area: down;
 }
 .right {
-  aspect-ratio: 1.5;
   grid-area: right;
 }
 .popup {
