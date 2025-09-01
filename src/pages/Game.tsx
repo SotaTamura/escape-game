@@ -2,9 +2,8 @@ import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { RESOLUTION, STAGE_LEN, STEP } from "../game/base";
 import { useNavigate, useParams } from "react-router-dom";
-import { loadStage, hintTexts, update } from "../game/main";
+import { loadStage, update, hint } from "../game/main";
 import ArrowButton from "../components/ArrowButton";
-import Checkbox from "../components/Checkbox";
 
 export let app: Application; // pixiアプリケーション
 
@@ -13,7 +12,8 @@ export default function Game() {
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const [restarter, setRestarter] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [isTextGuideChecked, setIsTextGuideChecked] = useState(false);
+  const [isHintShowed, setIsHintShowed] = useState(false);
+  const [hintText, setHintText] = useState("");
   const navigate = useNavigate();
   const isMobile = window.ontouchstart !== undefined && navigator.maxTouchPoints > 0; // タッチ端末判定
   // 更新
@@ -35,7 +35,7 @@ export default function Game() {
   };
   useEffect(() => {
     setIsComplete(false);
-    setIsTextGuideChecked(false);
+    setIsHintShowed(false);
     app = new Application();
     let $can: HTMLCanvasElement;
     (async () => {
@@ -50,6 +50,7 @@ export default function Game() {
       $can.id = "main";
       canvasWrapperRef.current?.appendChild($can);
       await loadStage(id);
+      setHintText(hint);
       requestAnimationFrame(gameLoop);
     })();
     return () => {
@@ -78,16 +79,26 @@ export default function Game() {
         <img src="/menu.png" alt="" className="icon" />
       </div>
       <div className="guides">
-        <Checkbox
-          id="txtGuide"
-          checked={isTextGuideChecked}
-          onChange={() => {
-            setIsTextGuideChecked(!isTextGuideChecked);
-            hintTexts.forEach((text) => (text.visible = !isTextGuideChecked));
+        <div
+          className="miniBtn guide"
+          onClick={(e) => {
+            setIsHintShowed(true);
+            e.preventDefault();
           }}>
           ヒント
-        </Checkbox>
+        </div>
       </div>
+
+      {isHintShowed && (
+        <div
+          className="popup"
+          onClick={() => {
+            setIsHintShowed(false);
+          }}>
+          <div className="popupTitle">hint</div>
+          <div className="hintText">{hintText}</div>
+        </div>
+      )}
       {isMobile && (
         <div className="controlBtns">
           <ArrowButton eventName="up"></ArrowButton>
@@ -97,8 +108,8 @@ export default function Game() {
         </div>
       )}
       {isComplete && (
-        <div className="complete">
-          <div className="completeText">stage complete!</div>
+        <div className="popup">
+          <div className="popupTitle">stage complete!</div>
           {id === STAGE_LEN ? (
             <div
               className="btn next"

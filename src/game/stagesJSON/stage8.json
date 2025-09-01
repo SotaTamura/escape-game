@@ -700,6 +700,12 @@
  "nextlayerid":12,
  "nextobjectid":265,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"hint",
+         "type":"string",
+         "value":"\u81ea\u5206\u3067\u8003\u3048\u3088\u3046"
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
  "tileheight":16,

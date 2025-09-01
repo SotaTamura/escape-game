@@ -4,18 +4,20 @@
 }
 * {
   padding: 0;
-  margin: 0;
   box-sizing: border-box;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   color: #fff;
   touch-action: none;
+  text-align: center;
+  margin: 0 auto;
 }
 img {
   pointer-events: none;
 }
 .btn,
+.miniBtn,
 img {
   image-rendering: pixelated;
   -webkit-touch-callout: none;
@@ -33,7 +35,6 @@ body {
   position: relative;
 }
 .backGround {
-  text-align: center;
   position: fixed;
   top: 0;
   left: 0;
@@ -76,6 +77,7 @@ body {
   width: 18dvmin;
   height: 12dvmin;
   grid-area: back;
+  margin-left: 10px;
 }
 .selectStageText {
   grid-area: txt;
@@ -123,6 +125,12 @@ body {
   right: 25%;
   overflow: visible;
 }
+.miniBtn {
+  background-color: #aaa;
+  color: #333;
+  border: #333 solid 2px;
+  cursor: pointer;
+}
 .stage {
   width: 20dvmin;
   height: 14dvmin;
@@ -154,6 +162,13 @@ input[type="checkbox"] {
   grid-area: guide;
   font-size: 20px;
   text-align: left;
+  width: 100dvw;
+  height: 40px;
+}
+.guide {
+  width: 80px;
+  height: 35px;
+  margin: 0 10px;
 }
 #main {
   width: 100dvmin;
@@ -179,7 +194,6 @@ input[type="checkbox"] {
 }
 .controlBtns {
   grid-area: btn;
-  margin: 0 auto;
   width: 100dvw;
   max-width: 270px;
   aspect-ratio: 1.5;
@@ -192,39 +206,51 @@ input[type="checkbox"] {
     "... down ...";
 }
 .up {
+  aspect-ratio: 1.5;
   grid-area: up;
 }
 .left {
+  aspect-ratio: 1.5;
   grid-area: left;
 }
 .down {
+  aspect-ratio: 1.5;
   grid-area: down;
 }
 .right {
+  aspect-ratio: 1.5;
   grid-area: right;
 }
-.complete {
+.popup {
   z-index: 10;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr 3fr;
   grid-template-areas:
-    "text"
-    "btn";
+    "title"
+    "detail";
   background: rgba(48, 48, 48, 0.8);
   border: 20px double #eee;
   position: absolute;
   inset: 10%;
   text-align: center;
 }
-.completeText {
+.popupTitle {
   z-index: 11;
   margin: 10dvmin;
-  grid-area: text;
+  grid-area: title;
+}
+.hintText {
+  z-index: 11;
+  grid-area: detail;
+  width: 100%;
+  font-size: 6dvmin;
+  white-space: pre-line;
+  overflow: scroll;
 }
 .next {
   z-index: 11;
-  grid-area: btn;
+  grid-area: detail;
   width: 30dvmin;
   height: 20dvmin;
   margin: auto;

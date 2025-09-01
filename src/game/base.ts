@@ -5,7 +5,7 @@ import { gameObjs } from "./main.ts";
 
 // 定数
 const π = Math.PI;
-export const STAGE_LEN = 14;
+export const STAGE_LEN = 18;
 export const STEP = 1000 / 60;
 export const RESOLUTION = 1024;
 export const MAP_BLOCK_LEN = 16;
@@ -46,6 +46,8 @@ export let onewayTexture: Texture;
 export let leverTextures: Texture[];
 export let portalTexture: Texture;
 export let pushBlockTexture: Texture;
+export let buttonTextures: Texture[];
+export let moveBlockTextures: Texture[];
 // sprite加工
 export const editTexture = (obj: GameObj, state: string, newRotId: number) => {
   const key = `${state}_${newRotId}`;
@@ -195,27 +197,37 @@ export const updateSprites = () => {
 };
 // 初期化関数
 export async function onLoad() {
-  // 画像読み込み
-  for (let i = 0; i <= 6; i++) {
-    await Assets.load(`/player${i}.png`);
-  }
-  playerTextures = [0, 1, 2, 3, 4, 5, 6].map((i) => Texture.from(`/player${i}.png`));
+  // 画像のパスを配列にまとめる
+  const assetUrls = [...Array.from({ length: 7 }, (_, i) => `/player${i}.png`), "/block.png", "/block_deactivated_line.png", "/ladder.png", "/key.png", "/oneway.png", "/lever_off.png", "/lever_on.png", "/portalOld.png", "/pushblock.png", "/button_off.png", "/button_on.png", "/moveblock_off.png", "/moveblock_on.png"];
+
+  // すべてのアセットを並行して読み込む
+  const textures = await Assets.load(assetUrls);
+
+  // 読み込んだテクスチャをグローバル変数に割り当てる
+  playerTextures = Array.from({ length: 7 }, (_, i) => textures[`/player${i}.png`]);
   playerIdleFrames = [playerTextures[0]];
   playerWalkFrames = [playerTextures[1], playerTextures[0], playerTextures[2], playerTextures[0]];
   playerJumpFrames = [playerTextures[3]];
   playerFallFrames = [playerTextures[4]];
   playerLadderMoveFrames = [playerTextures[4], playerTextures[5]];
   playerLadderIdleFrames = [playerTextures[6]];
-  blockTexture = await Assets.load("/block.png");
-  blockDeactivatedLineTexture = await Assets.load("/block_deactivated_line.png");
-  ladderTexture = await Assets.load("/ladder.png");
-  keyTexture = await Assets.load("/key.png");
-  onewayTexture = await Assets.load("/oneway.png");
-  leverTextures = [await Assets.load("/lever_off.png"), await Assets.load("/lever_on.png")];
-  portalTexture = await Assets.load("/portalOld.png");
-  pushBlockTexture = await Assets.load("/pushblock.png");
-  [...playerTextures, blockTexture, blockDeactivatedLineTexture, ladderTexture, keyTexture, onewayTexture, ...leverTextures, portalTexture, pushBlockTexture].forEach((texture) => {
-    texture.source.scaleMode = "nearest";
+  blockTexture = textures["/block.png"];
+  blockDeactivatedLineTexture = textures["/block_deactivated_line.png"];
+  ladderTexture = textures["/ladder.png"];
+  keyTexture = textures["/key.png"];
+  onewayTexture = textures["/oneway.png"];
+  leverTextures = [textures["/lever_off.png"], textures["/lever_on.png"]];
+  portalTexture = textures["/portalOld.png"];
+  pushBlockTexture = textures["/pushblock.png"];
+  buttonTextures = [textures["/button_off.png"], textures["/button_on.png"]];
+  moveBlockTextures = [textures["/moveblock_off.png"], textures["/moveblock_on.png"]];
+
+  // nearest-neighbor scaling を適用
+  assetUrls.forEach((url) => {
+    const texture = textures[url];
+    if (texture) {
+      texture.source.scaleMode = "nearest";
+    }
   });
   // キーイベント
   document.addEventListener("keydown", (e) => {

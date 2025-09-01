@@ -1,5 +1,5 @@
 import { AnimatedSprite, Sprite, Texture } from "pixi.js";
-import { blockTexture, keyTexture, ladderTexture, onewayTexture, playerIdleFrames, playerWalkFrames, pressingEvent, flipX, playerJumpFrames, playerFallFrames, playerLadderMoveFrames, playerLadderIdleFrames, leverTextures, pushBlockTexture, portalTexture, changeTexture } from "./base.ts";
+import { blockTexture, keyTexture, ladderTexture, onewayTexture, playerIdleFrames, playerWalkFrames, pressingEvent, flipX, playerJumpFrames, playerFallFrames, playerLadderMoveFrames, playerLadderIdleFrames, leverTextures, pushBlockTexture, portalTexture, changeTexture, buttonTextures, moveBlockTextures } from "./base.ts";
 
 // オブジェクト
 export abstract class GameObj {
@@ -93,10 +93,10 @@ export abstract class GameObj {
     for (const obj of objs) {
       if ((obj instanceof Oneway && obj.angle !== 0) || this.strength.bottom > obj.strength.top) continue;
       if (this.innerHitboxBottom <= obj.hitboxTop && this.hitboxBottom + this.vy >= obj.hitboxTop + obj.vy && !((this.innerHitboxRight <= obj.hitboxLeft || this.innerHitboxLeft >= obj.hitboxRight) && (this.innerHitboxRight + this.vx <= obj.hitboxLeft + obj.vx || this.innerHitboxLeft + this.vx >= obj.hitboxRight + obj.vx))) {
-        if (!nearestObj || obj.hitboxTop > nearestObj.hitboxTop) {
+        if (!nearestObj || obj.hitboxTop < nearestObj.hitboxTop) {
           nearestObj = obj;
         } else if (nearestObj && obj.hitboxTop === nearestObj.hitboxTop) {
-          if (obj.initStrength > nearestObj.initStrength) {
+          if (obj.vy < nearestObj.vy) {
             nearestObj = obj;
           }
         }
@@ -104,7 +104,7 @@ export abstract class GameObj {
     }
     if (nearestObj && this.vy - nearestObj.vy >= 0) {
       this.y = nearestObj.hitboxTop - this.hitboxYEnd;
-      this.vy = nearestObj.vy;
+      this.vy = this.strength.bottom === nearestObj.strength.top && this.strength.bottom === 15000 ? 0 : nearestObj.vy;
       this.isOnBlock = nearestObj;
       this.strength.top = nearestObj.strength.top;
     }
@@ -115,7 +115,7 @@ export abstract class GameObj {
     for (const obj of objs) {
       if ((obj instanceof Oneway && obj.angle !== 180) || this.strength.top > obj.strength.bottom) continue;
       if (this.innerHitboxTop >= obj.hitboxBottom && this.hitboxTop + this.vy <= obj.hitboxBottom + obj.vy && !((this.innerHitboxRight <= obj.hitboxLeft || this.innerHitboxLeft >= obj.hitboxRight) && (this.innerHitboxRight + this.vx <= obj.hitboxLeft + obj.vx || this.innerHitboxLeft + this.vx >= obj.hitboxRight + obj.vx))) {
-        if (!nearestObj || obj.hitboxBottom < nearestObj.hitboxBottom) {
+        if (!nearestObj || obj.hitboxBottom > nearestObj.hitboxBottom) {
           nearestObj = obj;
         } else if (nearestObj && obj.hitboxBottom === nearestObj.hitboxBottom) {
           if (obj.initStrength > nearestObj.initStrength) {
@@ -125,7 +125,8 @@ export abstract class GameObj {
       }
     }
     if (nearestObj && this.vy - nearestObj.vy <= 0) {
-      this.vy = nearestObj.hitboxBottom + nearestObj.vy - this.hitboxYStart - this.y;
+      this.y = nearestObj.hitboxBottom - this.hitboxYStart;
+      this.vy = this.strength.top === nearestObj.strength.bottom && this.strength.top === 15000 ? 0 : nearestObj.vy;
       this.strength.bottom = nearestObj.strength.bottom;
     }
   }
@@ -145,7 +146,8 @@ export abstract class GameObj {
       }
     }
     if (nearestObj && this.vx - nearestObj.vx <= 0) {
-      this.vx = nearestObj.hitboxRight + nearestObj.vx - this.hitboxXStart - this.x;
+      this.x = nearestObj.hitboxRight - this.hitboxXStart;
+      this.vx = this.strength.left === nearestObj.strength.right && this.strength.left === 15000 ? 0 : nearestObj.vx;
       this.strength.right = nearestObj.strength.right;
     }
   }
@@ -153,7 +155,7 @@ export abstract class GameObj {
   collideRight(objs: GameObj[]) {
     let nearestObj: GameObj | null = null;
     for (const obj of objs) {
-      if ((obj instanceof Oneway && obj.angle !== 270) || this.strength.right > obj.strength.left) continue;
+      if ((obj instanceof Oneway && obj.angle !== -90) || this.strength.right > obj.strength.left) continue;
       if (this.innerHitboxRight <= obj.hitboxLeft && this.hitboxRight + this.vx >= obj.hitboxLeft + obj.vx && !((this.innerHitboxBottom <= obj.hitboxTop || this.innerHitboxTop >= obj.hitboxBottom) && (this.innerHitboxBottom + this.vy <= obj.hitboxTop + obj.vy || this.innerHitboxTop + this.vy >= obj.hitboxBottom + obj.vy))) {
         if (!nearestObj || obj.hitboxLeft < nearestObj.hitboxLeft) {
           nearestObj = obj;
@@ -165,10 +167,12 @@ export abstract class GameObj {
       }
     }
     if (nearestObj && this.vx - nearestObj.vx >= 0) {
-      this.vx = nearestObj.hitboxLeft + nearestObj.vx - this.hitboxXEnd - this.x;
+      this.x = nearestObj.hitboxLeft - this.hitboxXEnd;
+      this.vx = this.strength.right === nearestObj.strength.left && this.strength.right === 15000 ? 0 : nearestObj.vx;
       this.strength.left = nearestObj.strength.left;
     }
   }
+  // ポータル
   handlePortal(portals: Portal[]) {
     const wasInPortal = this.isInPortal;
     this.isInPortal = null;
@@ -240,10 +244,12 @@ export class Player extends GameObj implements Animated {
     for (const obj of objs) {
       if ((obj instanceof Oneway && obj.angle !== 0) || this.strength.bottom > obj.strength.top) continue;
       else if (((obj instanceof Ladder && !pressingEvent.down && this.hitboxBottom <= obj.hitboxTop && this.hitboxBottom + this.vy >= obj.hitboxTop + obj.vy) || !(obj instanceof Ladder)) && this.innerHitboxBottom <= obj.hitboxTop && this.hitboxBottom + this.vy >= obj.hitboxTop + obj.vy && !((this.innerHitboxRight <= obj.hitboxLeft || this.innerHitboxLeft >= obj.hitboxRight) && (this.innerHitboxRight + this.vx < obj.hitboxLeft + obj.vx || this.innerHitboxLeft + this.vx > obj.hitboxRight + obj.vx))) {
-        if (!nearestObj || obj.hitboxTop > nearestObj.hitboxTop) {
+        if (!nearestObj || obj.hitboxTop < nearestObj.hitboxTop) {
           nearestObj = obj;
         } else if (nearestObj && obj.hitboxTop === nearestObj.hitboxTop) {
-          if (obj.initStrength > nearestObj.initStrength) {
+          if (obj.vy < nearestObj.vy) {
+            nearestObj = obj;
+          } else if (obj.vy === nearestObj.vy && obj.initStrength > nearestObj.initStrength) {
             nearestObj = obj;
           }
         }
@@ -251,7 +257,7 @@ export class Player extends GameObj implements Animated {
     }
     if (nearestObj && this.vy - nearestObj.vy >= 0) {
       this.y = nearestObj.hitboxTop - this.hitboxYEnd;
-      this.vy = nearestObj.vy;
+      this.vy = this.strength.bottom === nearestObj.strength.top && this.strength.bottom === 15000 ? 0 : nearestObj.vy;
       this.isOnBlock = nearestObj;
       this.strength.top = nearestObj.strength.top;
     }
@@ -306,7 +312,7 @@ export class Block extends GameObj implements Colorable, NonAnimated {
   baseTextures: Record<string, Texture>;
   generatedTextures: Map<string, Texture>;
   constructor(x: number, y: number, w: number, h: number, angle: number, isSolid: boolean, color: string) {
-    super(x, y, w, h, angle, 0, w, 0, h, "default", isSolid, 20000, 0);
+    super(x, y, w, h, angle, 0, w, 0, h, "default", isSolid, 20000, 0.05);
     this.color = color;
     this.sprite = new Sprite(blockTexture);
     this.baseTextures = { default: blockTexture };
@@ -320,7 +326,7 @@ export class Ladder extends GameObj implements NonAnimated {
   baseTextures: Record<string, Texture>;
   generatedTextures: Map<string, Texture>;
   constructor(x: number, y: number, w: number, h: number, angle: number) {
-    super(x, y, w, h, angle, 0, w, 0, h, "default", false, 20000, 0);
+    super(x, y, w, h, angle, 0, w, 0, h, "default", false, 20000, 0.05);
     this.sprite = new Sprite(ladderTexture);
     this.baseTextures = { default: ladderTexture };
     this.generatedTextures = new Map();
@@ -334,7 +340,7 @@ export class Key extends GameObj implements Colorable, NonAnimated {
   baseTextures: Record<string, Texture>;
   generatedTextures: Map<string, Texture>;
   constructor(x: number, y: number, w: number, h: number, angle: number, color: string) {
-    super(x, y, w, h, angle, 0.2, w - 0.2, 0.2, h - 0.2, "default", false, -1, 0);
+    super(x, y, w, h, angle, 0.2, w - 0.2, 0.2, h - 0.2, "default", false, -1, 0.05);
     this.color = color;
     this.sprite = new Sprite(keyTexture);
     this.baseTextures = { default: keyTexture };
@@ -349,7 +355,7 @@ export class Oneway extends GameObj implements Colorable, NonAnimated {
   baseTextures: Record<string, Texture>;
   generatedTextures: Map<string, Texture>;
   constructor(x: number, y: number, w: number, h: number, angle: number, color: string) {
-    super(x, y, w, h, angle, 0, w, 0, h, "default", true, 20000, 0);
+    super(x, y, w, h, angle, 0, w, 0, h, "default", true, 20000, 0.05);
     this.color = color;
     this.sprite = new Sprite(onewayTexture);
     this.baseTextures = { default: onewayTexture };
@@ -363,15 +369,15 @@ export class Lever extends GameObj implements Colorable, NonAnimated {
   sprite: Sprite;
   baseTextures: Record<string, Texture>;
   generatedTextures: Map<string, Texture>;
-  isPlayerContacting: boolean;
+  isBeingContacted: boolean;
   constructor(x: number, y: number, w: number, h: number, angle: number, color: string) {
-    super(x, y, w, h, angle, 0.2, w - 0.2, 0.2, h - 0.2, "off", false, -1, 0);
+    super(x, y, w, h, angle, 0.2, w - 0.2, 0.2, h - 0.2, "off", false, -1, 0.05);
     this.color = color;
     this.sprite = new Sprite(leverTextures[0]);
     this.baseTextures = { off: leverTextures[0], on: leverTextures[1] };
     this.generatedTextures = new Map();
     this.generatedTextures.set("off_0", leverTextures[0]);
-    this.isPlayerContacting = false;
+    this.isBeingContacted = false;
   }
 }
 // ポータル
@@ -381,7 +387,7 @@ export class Portal extends GameObj implements NonAnimated {
   generatedTextures: Map<string, Texture>;
   id: string;
   constructor(x: number, y: number, w: number, h: number, angle: number, id: string) {
-    super(x, y, w, h, angle, w / 2, w / 2, h / 2, h / 2, "default", false, -1, 0);
+    super(x, y, w, h, angle, w / 2, w / 2, h / 2, h / 2, "default", false, -1, 0.05);
     this.sprite = new Sprite(portalTexture);
     this.baseTextures = { default: portalTexture };
     this.generatedTextures = new Map();
@@ -389,7 +395,7 @@ export class Portal extends GameObj implements NonAnimated {
     this.id = id;
   }
 }
-// 押せるブロック
+// 押しブロック
 export class PushBlock extends GameObj implements NonAnimated {
   sprite: Sprite;
   baseTextures: Record<string, Texture>;
@@ -411,5 +417,60 @@ export class PushBlock extends GameObj implements NonAnimated {
       } else this.isInLadder = null;
     }
     if (this.isInLadder) this.vy = 0;
+  }
+}
+// ボタン
+export class Button extends GameObj implements Colorable, NonAnimated {
+  color: string;
+  sprite: Sprite;
+  baseTextures: Record<string, Texture>;
+  generatedTextures: Map<string, Texture>;
+  isPressed: Boolean;
+  constructor(x: number, y: number, w: number, h: number, angle: number, color: string) {
+    super(x, y, w, h, angle, 0, w, 0, h, "off", true, 20000, 0.05);
+    if (this.angle === 0) {
+      this.hitboxXStart = 0;
+      this.hitboxXEnd = w;
+      this.hitboxYStart = (3 / 4) * h;
+      this.hitboxYEnd = h;
+    } else if (this.angle === 90) {
+      this.hitboxXStart = 0;
+      this.hitboxXEnd = (1 / 4) * w;
+      this.hitboxYStart = 0;
+      this.hitboxYEnd = h;
+    } else if (this.angle === 180) {
+      this.hitboxXStart = 0;
+      this.hitboxXEnd = w;
+      this.hitboxYStart = 0;
+      this.hitboxYEnd = (1 / 4) * h;
+    } else if (this.angle === -90) {
+      this.hitboxXStart = (3 / 4) * w;
+      this.hitboxXEnd = w;
+      this.hitboxYStart = 0;
+      this.hitboxYEnd = h;
+    }
+    this.color = color;
+    this.sprite = new Sprite(buttonTextures[0]);
+    this.baseTextures = { off: buttonTextures[0], on: buttonTextures[1] };
+    this.generatedTextures = new Map();
+    this.generatedTextures.set("off_0", buttonTextures[0]);
+    this.isPressed = false;
+  }
+}
+// 駆動ブロック
+export class MoveBlock extends GameObj implements Colorable, NonAnimated {
+  color: string;
+  sprite: Sprite;
+  baseTextures: Record<string, Texture>;
+  generatedTextures: Map<string, Texture>;
+  isActivated: boolean;
+  constructor(x: number, y: number, w: number, h: number, angle: number, color: string, isActivated: boolean) {
+    super(x, y, w, h, angle, 0, w, 0, h, isActivated ? "on" : "off", true, 15000, 0.05);
+    this.color = color;
+    this.sprite = new Sprite(moveBlockTextures[isActivated ? 1 : 0]);
+    this.baseTextures = { off: moveBlockTextures[0], on: moveBlockTextures[1] };
+    this.generatedTextures = new Map();
+    this.generatedTextures.set(`${isActivated ? "on" : "off"}_0`, moveBlockTextures[isActivated ? 1 : 0]);
+    this.isActivated = isActivated;
   }
 }

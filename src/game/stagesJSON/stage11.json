@@ -564,7 +564,7 @@
                  "height":16,
                  "id":388,
                  "name":"",
-                 "rotation":270,
+                 "rotation":-90,
                  "type":"",
                  "visible":true,
                  "width":48,
@@ -700,6 +700,12 @@
  "nextlayerid":13,
  "nextobjectid":473,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"hint",
+         "type":"string",
+         "value":"\u81ea\u5206\u3067\u8003\u3048\u3088\u3046"
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
  "tileheight":16,
