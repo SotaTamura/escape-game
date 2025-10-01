@@ -151,7 +151,7 @@ export const drawSprite = (obj: GameObj) => {
     let rotId = (obj.container.children[0] as Sprite | undefined)?.texture.rotate ?? 0;
     const removed = container.removeChildren();
     for (const child of removed) {
-        child.destroy({ children: true, texture: true, textureSource: true });
+        child.destroy({ children: true });
     }
     obj.spriteBoxes.forEach((spriteBox) => {
         let sprite;
@@ -207,7 +207,7 @@ export const drawSprite = (obj: GameObj) => {
 export const drawDebug = () => {
     const removed = debugContainer.removeChildren();
     for (const child of removed) {
-        child.destroy({ children: true, texture: true, textureSource: true });
+        child.destroy({ children: true });
     }
     for (const obj of gameObjs) {
         obj.spriteBoxes.forEach((s) => {
