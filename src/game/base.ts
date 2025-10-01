@@ -149,7 +149,10 @@ export const changeTexture = (obj: GameObj, state: string) => {
 export const drawSprite = (obj: GameObj) => {
     const container = obj.container;
     let rotId = (obj.container.children[0] as Sprite | undefined)?.texture.rotate ?? 0;
-    container.removeChildren();
+    const removed = container.removeChildren();
+    for (const child of removed) {
+        child.destroy({ children: true, texture: true, textureSource: true });
+    }
     obj.spriteBoxes.forEach((spriteBox) => {
         let sprite;
         if (isAnimated(obj)) {
@@ -202,7 +205,10 @@ export const drawSprite = (obj: GameObj) => {
 };
 // デバッグ用
 export const drawDebug = () => {
-    debugContainer.removeChildren();
+    const removed = debugContainer.removeChildren();
+    for (const child of removed) {
+        child.destroy({ children: true, texture: true, textureSource: true });
+    }
     for (const obj of gameObjs) {
         obj.spriteBoxes.forEach((s) => {
             debugContainer.addChild(new Graphics().rect(s.l * UNIT, s.t * UNIT, s.w * UNIT, s.h * UNIT).fill({ color: 0xffffff, alpha: 0.5 }));
