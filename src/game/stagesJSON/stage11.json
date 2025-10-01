@@ -180,12 +180,12 @@
                  "height":16,
                  "id":450,
                  "name":"",
-                 "rotation":0,
+                 "rotation":180,
                  "type":"A",
                  "visible":true,
                  "width":16,
-                 "x":64,
-                 "y":96
+                 "x":80,
+                 "y":80
                 }, 
                 {
                  "gid":2,

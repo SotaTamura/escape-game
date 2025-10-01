@@ -725,19 +725,19 @@
                  "visible":true,
                  "width":16,
                  "x":176,
-                 "y":128
+                 "y":132
                 }, 
                 {
                  "gid":7,
                  "height":16,
                  "id":545,
                  "name":"",
-                 "rotation":0,
+                 "rotation":180,
                  "type":"A",
                  "visible":true,
                  "width":16,
-                 "x":144,
-                 "y":32
+                 "x":160,
+                 "y":16
                 }],
          "opacity":1,
          "type":"objectgroup",

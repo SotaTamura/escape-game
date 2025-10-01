@@ -1,23 +1,23 @@
 import { useEffect } from "react";
 import { pressingEvent, pressStartEvent } from "../game/base";
 
-export default function ArrowButton({ eventName }: { eventName: "up" | "down" | "left" | "right" }) {
-  const HandleTouchStart = () => {
-    pressingEvent[eventName] = true;
-    pressStartEvent[eventName] = true;
-  };
-  const HandleTouchEnd = (e: React.TouchEvent) => {
-    pressingEvent[eventName] = false;
-    e.preventDefault();
-  };
-  useEffect(() => {});
+export default function ArrowButton({ eventName }: { eventName: "u" | "d" | "l" | "r" }) {
+    const HandleTouchStart = () => {
+        pressingEvent[eventName] = true;
+        pressStartEvent[eventName] = true;
+    };
+    const HandleTouchEnd = (e: React.TouchEvent) => {
+        pressingEvent[eventName] = false;
+        e.preventDefault();
+    };
+    useEffect(() => {});
 
-  return (
-    <>
-      <div className={`btn arrow ${eventName}`}>
-        <img src={`/${eventName}.png`} alt="" className="icon" />
-      </div>
-      <div className={`invisibleBtnCover ${eventName}`} onTouchStart={HandleTouchStart} onTouchEnd={HandleTouchEnd}></div>
-    </>
-  );
+    return (
+        <>
+            <div className={`btn arrow ${eventName}`}>
+                <img src={`/${eventName}.png`} alt="" className="icon" />
+            </div>
+            <div className={`invisibleBtnCover ${eventName}`} onTouchStart={HandleTouchStart} onTouchEnd={HandleTouchEnd}></div>
+        </>
+    );
 }
