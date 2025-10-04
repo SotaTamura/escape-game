@@ -1,6 +1,6 @@
 import { Sprite, Texture, Container } from "pixi.js";
 import { blockTexture, keyTexture, ladderTexture, onewayTexture, playerIdleFrames, playerWalkFrames, pressingEvent, flipX, playerJumpFrames, playerFallFrames, playerLadderMoveFrames, playerLadderIdleFrames, leverTextures, pushBlockTexture, portalTextures, changeTexture, buttonTextures, moveBlockTextures, drawSprite, rotate } from "./base.ts";
-import { SPEED, BLOCK_STRENGTH, STRENGTH_MOVE_BLOCK, PLAYER_STRENGTH, STRENGTH_PUSH_BLOCK, type Angle, CORNER_LEN, MOVE_OBJ_CORNER_LEN, PORTAL_ADJUST } from "../constants.ts";
+import { SPEED, BLOCK_STRENGTH, STRENGTH_MOVE_BLOCK, PLAYER_STRENGTH, STRENGTH_PUSH_BLOCK, type Angle, CORNER_LEN, MOVE_OBJ_CORNER_LEN } from "../constants.ts";
 
 // 箱
 export class Box {
@@ -368,6 +368,7 @@ export abstract class GameObj {
                             this.hiddenHitboxes = this.hiddenHitboxes.filter((h) => h !== hitbox.counterpartHidden.r && h !== hitbox.counterpart.r?.counterpartHidden.l);
                             hitbox.counterpartHidden.r = null;
                             hitbox.counterpart.r.counterpartHidden.l = null;
+                            hitbox.counterpart.r.w = Math.round(hitbox.counterpart.r.w * 1000) / 1000;
                         }
                     }
                 }
@@ -385,6 +386,7 @@ export abstract class GameObj {
                         if (spriteBox.w < 0) {
                             this.spriteBoxes = this.spriteBoxes.filter((s) => s !== spriteBox);
                             spriteBox.counterpart.r.counterpart.l = null;
+                            spriteBox.counterpart.r.w = Math.round(spriteBox.counterpart.r.w * 1000) / 1000;
                         }
                         drawSprite(this);
                     }
@@ -417,6 +419,7 @@ export abstract class GameObj {
                             this.hiddenHitboxes = this.hiddenHitboxes.filter((h) => h !== hitbox.counterpartHidden.l && h !== hitbox.counterpart.l?.counterpartHidden.r);
                             hitbox.counterpartHidden.l = null;
                             hitbox.counterpart.l.counterpartHidden.r = null;
+                            hitbox.counterpart.l.w = Math.round(hitbox.counterpart.l.w * 1000) / 1000;
                         }
                     }
                 }
@@ -435,6 +438,7 @@ export abstract class GameObj {
                         if (spriteBox.w < 0) {
                             this.spriteBoxes = this.spriteBoxes.filter((s) => s !== spriteBox);
                             spriteBox.counterpart.l.counterpart.r = null;
+                            spriteBox.counterpart.l.w = Math.round(spriteBox.counterpart.l.w * 1000) / 1000;
                         }
                         drawSprite(this);
                     }
@@ -466,6 +470,7 @@ export abstract class GameObj {
                             this.hiddenHitboxes = this.hiddenHitboxes.filter((h) => h !== hitbox.counterpartHidden.d && h !== hitbox.counterpart.d?.counterpartHidden.u);
                             hitbox.counterpartHidden.d = null;
                             hitbox.counterpart.d.counterpartHidden.u = null;
+                            hitbox.counterpart.d.h = Math.round(hitbox.counterpart.d.h * 1000) / 1000;
                         }
                     }
                 }
@@ -483,6 +488,7 @@ export abstract class GameObj {
                         if (spriteBox.h < 0) {
                             this.spriteBoxes = this.spriteBoxes.filter((s) => s !== spriteBox);
                             spriteBox.counterpart.d.counterpart.u = null;
+                            spriteBox.counterpart.d.h = Math.round(spriteBox.counterpart.d.h * 1000) / 1000;
                         }
                         drawSprite(this);
                     }
@@ -515,6 +521,7 @@ export abstract class GameObj {
                             this.hiddenHitboxes = this.hiddenHitboxes.filter((h) => h !== hitbox.counterpartHidden.u && h !== hitbox.counterpart.u?.counterpartHidden.d);
                             hitbox.counterpartHidden.u = null;
                             hitbox.counterpart.u.counterpartHidden.d = null;
+                            hitbox.counterpart.u.h = Math.round(hitbox.counterpart.u.h * 1000) / 1000;
                         }
                     }
                 }
@@ -533,6 +540,7 @@ export abstract class GameObj {
                         if (spriteBox.h < 0) {
                             this.spriteBoxes = this.spriteBoxes.filter((s) => s !== spriteBox);
                             spriteBox.counterpart.u.counterpart.d = null;
+                            spriteBox.counterpart.u.h = Math.round(spriteBox.counterpart.u.h * 1000) / 1000;
                         }
                         drawSprite(this);
                     }
@@ -767,9 +775,9 @@ export class Portal extends GameObj implements NonAnimated, hasTriggers {
             y,
             ang,
             [
-                { relX: -w * PORTAL_ADJUST, relY: 0, w: 0, h: h / 2 },
-                { relX: w * (1 + PORTAL_ADJUST), relY: 0, w: 0, h: h / 2 },
-                { relX: -w * PORTAL_ADJUST, relY: h / 2, w: w * (1 + PORTAL_ADJUST * 2), h: 0 },
+                { relX: 0, relY: 0, w: 0, h: h / 2 },
+                { relX: w, relY: 0, w: 0, h: h / 2 },
+                { relX: 0, relY: h / 2, w: w, h: 0 },
             ],
             [{ relX: 0, relY: 0, w: w, h: h }],
             "default",
@@ -780,7 +788,7 @@ export class Portal extends GameObj implements NonAnimated, hasTriggers {
         this.generatedTextures = new Map();
         this.generatedTextures.set("default_0", portalTextures[0]);
         this.id = id;
-        this.triggers = [new Box(this, -w * PORTAL_ADJUST, 0, w * (1 + PORTAL_ADJUST * 2), h / 2)];
+        this.triggers = [new Box(this, 0, 0, w, h / 2)];
         [...this.hitboxes, ...this.triggers].forEach((t) => {
             rotate(t, ang, w, h);
         });

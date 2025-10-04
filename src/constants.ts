@@ -15,7 +15,6 @@ export const JUMP_SPEED = -0.2;
 export const SPEED = 0.08;
 export const CORNER_LEN = 0.05;
 export const MOVE_OBJ_CORNER_LEN = 0.2;
-export const PORTAL_ADJUST = 0.05;
 // 型
 export type Angle = 0 | 90 | 180 | -90;
 export type StageData = {
